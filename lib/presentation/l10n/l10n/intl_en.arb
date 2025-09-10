@@ -1,0 +1,17 @@
+{
+  "@@locale": "en",
+  "@_GENERAL": {},
+  "gWelcome": "Welcome",
+  "@_HOME_SCREEN": {},
+  "sHomeGetStatusDescriptive": "Get Example Status:",
+  "sHomeNumberClicksDescriptive": "Number of clicks:",
+  "sHomeCanTapHere": "You can tap this box.",
+  "sPropertyDetailsShowLess": "Property details show less",
+  "sPropertyDetailsShowMore": "Property details show more",
+  "gSomethingWrong": "Something wrong",
+  "gPleaseClickHereToRetry": "Please click here to retry.",
+  "gSkip": "Skip",
+  "gContinue": "Continue",
+  "sWishListCancel": "wish list cancel",
+  "gInserText": "insert text"
+}

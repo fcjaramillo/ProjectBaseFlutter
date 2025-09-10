@@ -1,0 +1,44 @@
+library;
+
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:base/presentation/assets/assets.dart';
+import 'package:base/presentation/entities/entities.dart';
+import 'package:base/presentation/enums/enums.dart';
+import 'package:base/presentation/extensions/extensions.dart';
+import 'package:base/presentation/utils/utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:iconsax/iconsax.dart';
+
+import '../ions/ions.dart';
+
+part 'bottom_navigation_bar_item_icon.dart';
+part 'button_primary.dart';
+part 'button_secondary.dart';
+part 'button_tertiary.dart';
+part 'card_icon_text.dart';
+part 'check_box.dart';
+part 'chip.dart';
+part 'circle_icon.dart';
+part 'copyright_text.dart';
+part 'custom_radio.dart';
+part 'divider.dart';
+part 'dropdown.dart';
+part 'fitted_vertical_divider.dart';
+part 'header_.dart';
+part 'icon_business_button.dart';
+part 'icon.dart';
+part 'image.dart';
+part 'modal_bottom_sheet_top_bar.dart';
+part 'notification_num.dart';
+part 'rich_text.dart';
+part 'shimmer_container.dart';
+part 'spacers.dart';
+part 'switch.dart';
+part 'text_area.dart';
+part 'text_buttom.dart';
+part 'text_field.dart';
+part 'text.dart';
