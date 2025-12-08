@@ -1,0 +1,44 @@
+library;
+
+import 'dart:async';
+import 'dart:math';
+
+import 'package:base/core/extensions/extensions.dart';
+import 'package:base/typing/extensions/extensions.dart';
+import 'package:carousel_slider_plus/carousel_slider_plus.dart';
+import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter/semantics.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:iconsax/iconsax.dart';
+
+import '../../../typing/entities/entities.dart';
+import '../../../typing/enums/enums.dart';
+import '../../ions/ions.dart';
+import '../../l10n/generated/l10n.dart';
+import '../../utils/utils.dart';
+import '../atoms/atoms.dart';
+import '../molecules/molecules.dart';
+
+part 'alert_dialog.dart';
+part 'bottom_navigation_bar.dart';
+part 'carousel_image.dart';
+part 'default_error.dart';
+part 'complete_register_bottom_sheet_body.dart';
+part 'custom_expansion_title.dart';
+part 'decision_bottom_sheet.dart';
+part 'expanded_headers_description.dart';
+part 'expanded_headers_rich_text.dart';
+part 'feedback_bottom_sheet.dart';
+part 'information_list_tile.dart';
+part 'message_action.dart';
+part 'message_bottom_sheet.dart';
+part 'radio_list_tile.dart';
+part 'snackbar_item_body.dart';
+part 'status_dialog.dart';
+part 'switch_list_tile.dart';
+part 'tab_header.dart';
+part 'vertical_divider.dart';
+part 'form_modal.dart';
+part 'single_list_wheel.dart';
+part 'border_container_information.dart';
+part 'elevation_nav_bar.dart';

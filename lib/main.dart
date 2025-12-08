@@ -1,8 +1,10 @@
+import 'package:base/ui/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'presentation/l10n/generated/l10n.dart';
-import 'presentation/routes/routes.dart';
+import 'ui/l10n/generated/l10n.dart';
+import 'ui/routes/routes.dart';
+import 'ui/theme/theme.dart';
 
 void main() {
   runApp(const ProviderScope(child: MyApp()));
@@ -13,21 +15,21 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => MaterialApp(
-        title: 'Ui Designs',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.grey),
-          useMaterial3: true,
-        ),
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-          L10n.delegate,
-          // GlobalMaterialLocalizations.delegate,
-          // GlobalWidgetsLocalizations.delegate,
-          // GlobalCupertinoLocalizations.delegate,
-        ],
-        locale: const Locale('en'),
-        supportedLocales: L10n.delegate.supportedLocales,
-        initialRoute: Routes.kRouteHome,
-        onGenerateRoute: AppRouter.generateRoute,
-      );
+    title: 'Ui Designs',
+    theme: AppTheme.appTheme(
+      isDark: false,
+      colors: lightThemeColors.appThemeColors(),
+    ),
+    debugShowCheckedModeBanner: false,
+    localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+      L10n.delegate,
+      //GlobalMaterialLocalizations.delegate,
+      //GlobalWidgetsLocalizations.delegate,
+      //GlobalCupertinoLocalizations.delegate,
+    ],
+    locale: const Locale('en'),
+    supportedLocales: L10n.delegate.supportedLocales,
+    initialRoute: Routes.kRouteHome,
+    onGenerateRoute: AppRouter.generateRoute,
+  );
 }

@@ -1,0 +1,62 @@
+{
+  "@@locale": "en",
+  "@_GENERAL": {},
+  "gActionNotAvailable": "This action is not available now, please try later",
+  "gValidatorNameLenghtError": "Character limit exceeded",
+  "gOther": "Other",
+  "gSkip": "Skip",
+  "gYes": "Yes",
+  "gNo": "No",
+  "gContinue": "Continue",
+  "gNotAvailable": "N/A",
+  "gNoResultsFound": "No results found",
+  "gGallery": "Gallery",
+  "gPercentage": "{percentage}%",
+  "@gPercentage": {
+    "placeholders": {
+      "percentage": {
+        "type": "double"
+      }
+    }
+  },
+  "gSomethingWrong": "Something went wrong.",
+  "gPleaseClickHereToRetry": "Please click here to retry",
+  "gValidatorErrorTryAgain": "Something went wrong. Please click here to retry",
+  "gValidatorClickHere": "Please click here to retry",
+  "gValidatorNotEmptyField": "This field cannot be empty",
+  "gValidatorEmailError": "Invalid email format",
+  "gValidatorPhoneError": "Invalid phone format",
+  "gValidatorNameError": "Invalid name format",
+  "gValidatorEmailOrIdError": "Invalid email or member id format",
+  "gUpdate": "Update",
+  "gPlusCode": "+{text}",
+  "@gPlusCode": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
+  "gRecommended": "Recommended",
+  "gNoMatchesFound": "Not matches found",
+  "gLeave": "Leave",
+  "gStay": "Stay",
+  "gHasOccurredError": "Something went wrong",
+  "gSomethingWentWrong": "Something went wrong. Please try again",
+  "gDetails": "Details",
+  "gSwipeDownReload": "Swipe down to reload",
+  "gValidatorErrorRequired": "This field is required",
+  "gInvalidEmail": "The email entered is not valid",
+  "gUsernameOrPasswordIncorrect": "Username or password is incorrect",
+  "gShowLess": "Show less",
+  "gShowMore": "Show more",
+  "gFakeName": "Fake Name",
+  "@_HOME_SCREEN": {},
+  "sHomeGetStatusDescriptive": "Get Example Status:",
+  "sHomeNumberClicksDescriptive": "Number of clicks:",
+  "sHomeCanTapHere": "You can tap this box.",
+  "sPropertyDetailsShowLess": "Property details show less",
+  "sPropertyDetailsShowMore": "Property details show more",
+  "sWishListCancel": "wish list cancel",
+  "gInserText": "insert text"
+}
