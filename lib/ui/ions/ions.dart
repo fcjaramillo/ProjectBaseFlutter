@@ -1,6 +1,7 @@
 library;
 
 import 'package:flutter/material.dart' hide Colors;
+import 'package:google_fonts/google_fonts.dart';
 
 part 'animations.dart';
 part 'durations.dart';

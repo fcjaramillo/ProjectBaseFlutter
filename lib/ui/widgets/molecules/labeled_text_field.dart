@@ -72,7 +72,7 @@ class BaseLabeledTextField extends StatelessWidget {
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: <Widget>[
-      BaseText.soft(header, style: TypoBody.b3r),
+      BaseText.soft(header, style: TypoSecondary.b3r),
       Spacing.spacingV8,
       Form(
         autovalidateMode: autovalidateMode,
@@ -100,7 +100,7 @@ class BaseLabeledTextField extends StatelessWidget {
               },
               textCapitalization: textCapitalization ?? TextCapitalization.none,
               keyboardType: keyboardType,
-              textStyle: TypoBody.b1r,
+              textStyle: TypoSecondary.b1r,
               onTapSuffixIcon: suffixOnTap,
               readOnly: readOnly ?? false,
               maxLines: maxLines,

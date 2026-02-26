@@ -48,7 +48,7 @@ class BaseAlertDialog extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: Layout.spaceM),
               child: BaseText(title, style: TypoSubtitles.s3),
             ),
-            BaseText(subtitle, style: TypoBody.b2r),
+            BaseText(subtitle, style: TypoSecondary.b2r),
             Spacing.spacingV24,
             DecisionButton(
               primaryText: textPrimeryButton ?? L10n.of(context).gSkip,

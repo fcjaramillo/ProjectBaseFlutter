@@ -1,9 +1,7 @@
 part of 'extensions.dart';
 
 extension DateTimeExtension on DateTime {
-  String _baseFormat(String format) {
-    return DateFormat(format).format(this);
-  }
+  String _baseFormat(String format) => DateFormat(format).format(this);
 
   Duration remainingTime({int minutes = 15, int seconds = 0}) => add(
     Duration(minutes: minutes, seconds: seconds),

@@ -41,7 +41,7 @@ class DesicionModal extends StatelessWidget {
           if (icon != null) ...<Widget>[icon!, Spacing.spacingV24],
           BaseText(
             description,
-            style: TypoBody.b2r,
+            style: TypoSecondary.b2r,
             textAlign: TextAlign.center,
           ),
           Spacing.spacingV12,

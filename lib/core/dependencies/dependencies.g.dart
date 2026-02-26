@@ -15,15 +15,15 @@ const clientProvider = ClientProvider._();
 final class ClientProvider extends $FunctionalProvider<Dio, Dio, Dio>
     with $Provider<Dio> {
   const ClientProvider._()
-      : super(
-          from: null,
-          argument: null,
-          retry: null,
-          name: r'clientProvider',
-          isAutoDispose: true,
-          dependencies: null,
-          $allTransitiveDependencies: null,
-        );
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'clientProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
   String debugGetCreateSourceHash() => _$clientHash();

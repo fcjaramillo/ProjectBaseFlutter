@@ -46,7 +46,7 @@ class _PasswordTextFieldState extends State<PasswordTextField> {
       onTapTextField: widget.onTapTextField,
       textCapitalization:
           widget.textCapitalization ?? TextCapitalization.sentences,
-      textStyle: TypoBody.b1r,
+      textStyle: TypoSecondary.b1r,
       errorMaxLines: widget.errorMaxLines,
     );
   }

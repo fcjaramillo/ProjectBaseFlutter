@@ -27,9 +27,9 @@ class ListDetailTemplate extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            BaseText(title, style: TypoHeadings.h4),
+            BaseText(title, style: TypoPrimary.h4),
             Spacing.spacingV8,
-            BaseText.soft(subtitle, style: TypoBody.b1r),
+            BaseText.soft(subtitle, style: TypoSecondary.b1r),
             if (extraWidget != null) ...<Widget>[
               Spacing.spacingV4,
               extraWidget!,

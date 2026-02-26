@@ -27,6 +27,7 @@ part 'colors/color_variants.dart';
 
 part 'form_item.dart';
 part 'navigation_notifier.dart';
+part 'news.dart';
 
 // Events
 part 'events/ui_event.dart';

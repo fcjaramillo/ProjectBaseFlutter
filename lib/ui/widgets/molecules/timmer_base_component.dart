@@ -29,7 +29,7 @@ class TimerBaseComponent extends StatelessWidget {
                 size: Layout.spaceML,
               ),
               Spacing.spacingH12,
-              BaseText(text, style: TypoBody.b3r),
+              BaseText(text, style: TypoSecondary.b3r),
             ],
           ),
         ),

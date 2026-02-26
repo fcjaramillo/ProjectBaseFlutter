@@ -39,7 +39,7 @@ class BaseDisclaimer extends StatelessWidget {
           IconLabel(
             icon: icon,
             text: title,
-            style: titleStyle ?? TypoBody.b2s,
+            style: titleStyle ?? TypoSecondary.b2s,
             size: Layout.spaceML,
             textColor: TextStyleColor.noChangeStrong,
             iconColor:
@@ -49,7 +49,7 @@ class BaseDisclaimer extends StatelessWidget {
           Spacing.spacingV12,
           BaseText.noChangeStrong(
             description,
-            style: descriptionStyle ?? TypoBody.b2r,
+            style: descriptionStyle ?? TypoSecondary.b2r,
           ),
         ],
       ),

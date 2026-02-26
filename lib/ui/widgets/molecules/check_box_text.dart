@@ -37,7 +37,7 @@ class CheckBoxText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final BaseCheckBox checkbox = BaseCheckBox(value ?? false, onTap: onTap!);
-    final BaseText textWidget = BaseText(text, style: TypoBody.b2r);
+    final BaseText textWidget = BaseText(text, style: TypoSecondary.b2r);
     final Widget spacing = Spacing.spacingH8;
 
     return Row(

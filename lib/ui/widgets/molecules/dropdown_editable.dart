@@ -140,7 +140,7 @@ class _BaseDropdownEditableState extends State<BaseDropdownEditable> {
                               height: Layout.spaceXL,
                               child: BaseText(
                                 filteredItems[index],
-                                style: TypoBody.b2r,
+                                style: TypoSecondary.b2r,
                               ),
                             ),
                           ),

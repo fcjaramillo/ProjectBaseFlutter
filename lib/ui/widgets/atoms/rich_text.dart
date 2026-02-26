@@ -30,8 +30,8 @@ class BaseRichText extends StatelessWidget {
     this.onTap,
     this.previousTextHasSpace = true,
     super.key,
-  }) : stylePrimary = TypoBody.b2s,
-       styleSecondary = TypoBody.b2r;
+  }) : stylePrimary = TypoSecondary.b2s,
+       styleSecondary = TypoSecondary.b2r;
 
   BaseRichText.typoB2r({
     required this.textPrimary,
@@ -41,8 +41,8 @@ class BaseRichText extends StatelessWidget {
     this.onTap,
     this.previousTextHasSpace = true,
     super.key,
-  }) : stylePrimary = TypoBody.b2r,
-       styleSecondary = TypoBody.b2r;
+  }) : stylePrimary = TypoSecondary.b2r,
+       styleSecondary = TypoSecondary.b2r;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,9 @@ class BaseRichText extends StatelessWidget {
             stylePrimary?.copyWith(
               color: colorPrimary ?? colorScheme.onSurface,
             ) ??
-            TypoBody.b2r.copyWith(color: colorPrimary ?? colorScheme.onSurface),
+            TypoSecondary.b2r.copyWith(
+              color: colorPrimary ?? colorScheme.onSurface,
+            ),
         children: <TextSpan>[
           TextSpan(
             text: textSecondary,
@@ -64,7 +66,7 @@ class BaseRichText extends StatelessWidget {
                 styleSecondary?.copyWith(
                   color: colorSecondary ?? colorScheme.onSurface,
                 ) ??
-                TypoBody.b2r.copyWith(
+                TypoSecondary.b2r.copyWith(
                   fontWeight: FontWeight.w700,
                   decoration: TextDecoration.underline,
                   color: colorSecondary ?? colorScheme.onSurface,

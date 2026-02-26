@@ -72,7 +72,7 @@ class BaseAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             ),
           ),
-          title: BaseText(title, style: titleStyle ?? TypoBody.b2s),
+          title: BaseText(title, style: titleStyle ?? TypoSecondary.b2s),
         );
 
   @override

@@ -111,7 +111,7 @@ class TextfieldWithVerticalLabel extends StatelessWidget {
           BaseText.withTextStyleColor(
             label!,
             textStyleColor: labelColor,
-            style: labelStyle ?? TypoBody.b3r,
+            style: labelStyle ?? TypoSecondary.b3r,
           ),
         TextFormField(
           autovalidateMode: autovalidateMode,
@@ -122,7 +122,7 @@ class TextfieldWithVerticalLabel extends StatelessWidget {
           obscuringCharacter: '●',
           readOnly: readOnly,
           obscureText: isObscureText,
-          style: textStyle ?? TypoBody.b1r,
+          style: textStyle ?? TypoSecondary.b1r,
           focusNode: focusNode,
           validator: validator,
           maxLength: maxLength,

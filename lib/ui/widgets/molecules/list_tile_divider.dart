@@ -41,7 +41,7 @@ class ListTileDivider extends StatelessWidget {
                 title!,
                 style:
                     textStyle ??
-                    TypoBody.b1r.copyWith(
+                    TypoSecondary.b1r.copyWith(
                       decoration: textDecoration,
                       overflow: textOverflow,
                     ),

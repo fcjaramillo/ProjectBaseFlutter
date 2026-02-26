@@ -55,7 +55,7 @@ class BaseDropdown extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           if (verticalLabel != null) ...<Widget>[
-            BaseText(verticalLabel!, style: TypoBody.b3r),
+            BaseText(verticalLabel!, style: TypoSecondary.b3r),
             Spacing.spacingV4,
           ],
           DecoratedBox(
@@ -71,16 +71,16 @@ class BaseDropdown extends StatelessWidget {
                 hint: (keepHint == null)
                     ? BaseText(
                         label ?? kEmptyString,
-                        style: textStyle ?? TypoBody.b1r,
+                        style: textStyle ?? TypoSecondary.b1r,
                       )
                     : (keepHint!
                           ? BaseText.subtle(
                               label ?? kEmptyString,
-                              style: textStyle ?? TypoBody.b1r,
+                              style: textStyle ?? TypoSecondary.b1r,
                             )
                           : BaseText(
                               label ?? kEmptyString,
-                              style: textStyle ?? TypoBody.b1r,
+                              style: textStyle ?? TypoSecondary.b1r,
                             )),
                 selectedItemBuilder: keepHint != null
                     ? (BuildContext ctx) => values.map((String v) {
@@ -95,11 +95,17 @@ class BaseDropdown extends StatelessWidget {
                                 label!,
                                 style: TypoCaption.c1.semibold,
                               ),
-                              BaseText(v, style: textStyle ?? TypoBody.b1r),
+                              BaseText(
+                                v,
+                                style: textStyle ?? TypoSecondary.b1r,
+                              ),
                             ],
                           );
                         } else {
-                          return BaseText(v, style: textStyle ?? TypoBody.b1r);
+                          return BaseText(
+                            v,
+                            style: textStyle ?? TypoSecondary.b1r,
+                          );
                         }
                       }).toList()
                     : null,
@@ -120,7 +126,10 @@ class BaseDropdown extends StatelessWidget {
                     .map(
                       (String v) => DropdownMenuItem<String>(
                         value: v,
-                        child: BaseText(v, style: textStyle ?? TypoBody.b1r),
+                        child: BaseText(
+                          v,
+                          style: textStyle ?? TypoSecondary.b1r,
+                        ),
                       ),
                     )
                     .toList(),

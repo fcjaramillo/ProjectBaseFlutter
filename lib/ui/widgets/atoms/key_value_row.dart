@@ -19,8 +19,11 @@ class KeyValueRow extends StatelessWidget {
     child: Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        BaseText(label, style: (strong ?? false) ? TypoBody.b2s : TypoBody.b2r),
-        BaseText(value, style: TypoBody.b2r),
+        BaseText(
+          label,
+          style: (strong ?? false) ? TypoSecondary.b2s : TypoSecondary.b2r,
+        ),
+        BaseText(value, style: TypoSecondary.b2r),
       ],
     ),
   );

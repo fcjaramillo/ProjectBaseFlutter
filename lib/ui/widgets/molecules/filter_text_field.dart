@@ -53,7 +53,7 @@ class _FilterTextFieldState extends State<FilterTextField> {
             prefixIcon: Iconsax.search_normal_1,
             controller: widget.searchController,
             label: widget.label,
-            labelStyle: TypoBody.b2r.copyWith(
+            labelStyle: TypoSecondary.b2r.copyWith(
               color: Theme.of(context).colorScheme.surfaceContainer,
             ),
             suffixIcon: showIcon ? Iconsax.close_circle5 : null,
@@ -62,7 +62,7 @@ class _FilterTextFieldState extends State<FilterTextField> {
               widget.clearText();
             },
             onChanged: _onChanged,
-            textStyle: TypoBody.b1r,
+            textStyle: TypoSecondary.b1r,
             borderRadius: Layout.spaceS,
           ),
         ),

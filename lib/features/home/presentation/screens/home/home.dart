@@ -1,16 +1,20 @@
 library;
 
-import 'package:base/core/extensions/extensions.dart';
-import 'package:base/typing/extensions/extensions.dart';
-import 'package:base/ui/widgets/atoms/atoms.dart';
-import 'package:base/ui/ions/ions.dart';
+import 'dart:math' show min;
+
 import 'package:flutter/material.dart' hide Colors;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../../typing/extensions/extensions.dart';
 import '../../../../../typing/result/result.dart';
+import '../../../../../ui/ions/ions.dart';
 import '../../../../../ui/routes/routes.dart';
-import '../../../../../ui/l10n/generated/l10n.dart';
+import '../../../../../ui/utils/utils.dart';
+import '../../../../../ui/widgets/atoms/atoms.dart';
+import '../../../../../ui/widgets/organisms/organisms.dart';
 import '../../../domain/dependencies/dependencies.dart';
 
 part 'state.dart';

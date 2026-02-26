@@ -17,11 +17,11 @@ class BaseError extends StatelessWidget {
           children: <Widget>[
             Icon(Iconsax.close_circle5, size: 40, color: colorScheme.error),
             Spacing.spacingV32,
-            BaseText(L10n.of(context).gSomethingWrong, style: TypoHeadings.h4),
+            BaseText(L10n.of(context).gSomethingWrong, style: TypoPrimary.h4),
             Spacing.spacingV12,
             BaseText(
               description ?? L10n.of(context).gPleaseClickHereToRetry,
-              style: TypoBody.b1r,
+              style: TypoSecondary.b1r,
             ),
           ],
         ),

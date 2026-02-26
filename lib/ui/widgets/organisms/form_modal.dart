@@ -91,7 +91,7 @@ class _FormModalState extends State<FormModal> {
             if (widget.subtitle != null)
               BaseText.base(
                 widget.subtitle!,
-                style: TypoBody.b2r,
+                style: TypoSecondary.b2r,
                 textAlign: TextAlign.center,
               ),
             Spacing.spacingV12,

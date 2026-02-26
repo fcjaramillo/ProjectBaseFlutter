@@ -179,7 +179,7 @@ class BaseTextField extends StatelessWidget {
       obscuringCharacter: '●',
       readOnly: readOnly,
       obscureText: isObscureText,
-      style: textStyle ?? TypoBody.b1r,
+      style: textStyle ?? TypoSecondary.b1r,
       focusNode: focusNode,
       validator: validator,
       maxLength: maxLength,
@@ -213,7 +213,8 @@ class BaseTextField extends StatelessWidget {
         counterText: '',
         labelText: !labelAsWidget ? label : null,
         floatingLabelBehavior: FloatingLabelBehavior.never,
-        labelStyle: labelStyle ?? TypoBody.b1r.copyWith(color: fixedLabelColor),
+        labelStyle:
+            labelStyle ?? TypoSecondary.b1r.copyWith(color: fixedLabelColor),
         border: OutlineInputBorder(
           borderRadius: borderRadius,
           borderSide: BorderSide(color: fixedBorderColor),

@@ -30,7 +30,7 @@ class SvgLabel extends StatelessWidget {
         flex: flex,
         child: BaseText.soft(
           text,
-          style: TypoBody.b2r,
+          style: TypoSecondary.b2r,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),

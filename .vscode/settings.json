@@ -1,0 +1,27 @@
+{
+  // Regla visual en la columna 80
+  "editor.rulers": [80],
+
+  // Soft wrap a 80 columnas
+  "editor.wordWrap": "wordWrapColumn",
+  "editor.wordWrapColumn": 80,
+
+  // Formatear al guardar
+  "editor.formatOnSave": true,
+
+  // Para Prettier (JS/TS/MD…)
+  "prettier.printWidth": 80,
+  "prettier.proseWrap": "always",
+
+  // Para Dart (Flutter)
+  "dart.lineLength": 80,
+  "[dart]": {
+    "editor.defaultFormatter": "Dart-Code.dart-code",
+    "editor.formatOnSave": true
+  },
+
+  "editor.inlineSuggest.showToolbar": "onHover",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": "explicit"
+  },
+}

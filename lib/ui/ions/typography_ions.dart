@@ -49,6 +49,7 @@ class FontLineHeight {
   static const double h48 = 48;
   static const double h56 = 56;
   static const double h64 = 64;
+  static const double h72 = 72;
 }
 
 class CustomFontWeight {

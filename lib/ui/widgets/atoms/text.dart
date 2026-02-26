@@ -406,8 +406,7 @@ class BaseText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     AppThemeColors theme = Theme.of(context).appColors;
-    //Color color = TextStyleColor.getColor(theme, textStyleColor);
-    Color color = theme.text.scale.strong;
+    Color color = TextStyleColor.getColor(theme, textStyleColor);
     return AutoSizeText(
       data,
       minFontSize: minFontSize!,

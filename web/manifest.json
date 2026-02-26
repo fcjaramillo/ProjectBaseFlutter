@@ -1,13 +1,33 @@
 {
-    "name": "ui_designs",
-    "short_name": "ui_designs",
-    "start_url": ".",
+    "name": "William Campino - Payanes de Corazon",
+    "short_name": "W. Campino",
+    "start_url": "/",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
-    "orientation": "portrait-primary",
+    "background_color": "#FAFAFA",
+    "theme_color": "#8B2F2F",
+    "description": "William Campino, candidato a la Alcaldia de Popayan. Juntos construiremos la Popayan moderna, humana y sostenible que la ciudad merece.",
+    "orientation": "any",
     "prefer_related_applications": false,
+    "scope": "/",
+    "lang": "es-CO",
+    "dir": "ltr",
+    "categories": ["politics", "government", "news"],
+    "screenshots": [
+        {
+            "src": "screenshots/desktop.png",
+            "sizes": "1920x1080",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Pagina principal de la campana"
+        },
+        {
+            "src": "screenshots/mobile.png",
+            "sizes": "750x1334",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "Vista movil de la campana"
+        }
+    ],
     "icons": [
         {
             "src": "icons/Icon-192.png",
@@ -31,5 +51,30 @@
             "type": "image/png",
             "purpose": "maskable"
         }
-    ]
+    ],
+    "shortcuts": [
+        {
+            "name": "Propuestas",
+            "short_name": "Propuestas",
+            "description": "Ver las propuestas de William Campino",
+            "url": "/propuestas",
+            "icons": [{ "src": "icons/Icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Agenda",
+            "short_name": "Agenda",
+            "description": "Ver los proximos eventos",
+            "url": "/agenda",
+            "icons": [{ "src": "icons/Icon-192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Contacto",
+            "short_name": "Contacto",
+            "description": "Contactar a la campana",
+            "url": "/contacto",
+            "icons": [{ "src": "icons/Icon-192.png", "sizes": "192x192" }]
+        }
+    ],
+    "related_applications": [],
+    "iarc_rating_id": ""
 }

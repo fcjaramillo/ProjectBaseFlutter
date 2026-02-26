@@ -35,10 +35,10 @@ class FeedbackBottomSheet extends StatelessWidget {
           size: Responsive.of(context).width * 0.25,
         ),
         const SizedBox.shrink(),
-        BaseText(title, style: TypoHeadings.h4, textAlign: TextAlign.center),
+        BaseText(title, style: TypoPrimary.h4, textAlign: TextAlign.center),
         BaseText.base(
           subtitle,
-          style: TypoBody.b1r,
+          style: TypoSecondary.b1r,
           textAlign: TextAlign.center,
         ),
         const SizedBox.shrink(),

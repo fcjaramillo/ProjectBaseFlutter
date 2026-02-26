@@ -14,7 +14,7 @@ class ErrorView extends StatelessWidget {
         BaseText(
           L10n.of(context).gSwipeDownReload,
           textAlign: TextAlign.center,
-          style: TypoBody.b1r,
+          style: TypoSecondary.b1r,
         ),
         Spacing.spacingV12,
       ],
@@ -23,13 +23,13 @@ class ErrorView extends StatelessWidget {
       BaseText.error(
         textAlign: TextAlign.center,
         'Error',
-        style: TypoBody.b1r.copyWith(fontSize: Layout.spaceL),
+        style: TypoSecondary.b1r.copyWith(fontSize: Layout.spaceL),
       ),
       Spacing.spacingV8,
       BaseText(
         textAlign: TextAlign.center,
         error ?? kEmptyString,
-        style: TypoBody.b1r,
+        style: TypoSecondary.b1r,
       ),
     ],
   );

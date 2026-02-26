@@ -63,7 +63,7 @@ class IconLabel extends StatelessWidget {
               child: BaseText.withTextStyleColor(
                 subtitle ?? kEmptyString,
                 textStyleColor: subtitleColor,
-                style: TypoBody.b2r,
+                style: TypoSecondary.b2r,
                 overflow: overflow ?? TextOverflow.ellipsis,
                 maxLines: haveMaxLines ? maxLines : null,
               ),

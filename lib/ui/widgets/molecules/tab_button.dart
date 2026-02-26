@@ -27,7 +27,7 @@ class TabButton extends StatelessWidget {
           child: BaseText.withTextStyleColor(
             title,
             textStyleColor: textStyleColor,
-            style: TypoBody.b1s,
+            style: TypoSecondary.b1s,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
           ),

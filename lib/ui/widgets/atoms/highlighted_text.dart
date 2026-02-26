@@ -24,15 +24,17 @@ class HighlightedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle defaultStyle = style?.copyWith(
+    final TextStyle defaultStyle =
+        style?.copyWith(
           color: Theme.of(context).colorScheme.onSurface,
           fontSize: minFontSize,
         ) ??
-        TypoHeadings.h3.copyWith(
+        TypoPrimary.h3.copyWith(
           color: Theme.of(context).colorScheme.onSurface,
           fontSize: minFontSize,
         );
-    final TextStyle highlightTextStyle = highlightStyle ??
+    final TextStyle highlightTextStyle =
+        highlightStyle ??
         defaultStyle.copyWith(
           color: Theme.of(context).colorScheme.primary,
           fontSize: minFontSize,
@@ -51,14 +53,8 @@ class HighlightedText extends StatelessWidget {
       text: TextSpan(
         style: defaultStyle,
         children: <InlineSpan>[
-          TextSpan(
-            text: parts.first,
-            style: defaultStyle,
-          ),
-          TextSpan(
-            text: highlight,
-            style: highlightTextStyle,
-          ),
+          TextSpan(text: parts.first, style: defaultStyle),
+          TextSpan(text: highlight, style: highlightTextStyle),
           TextSpan(
             text: parts.length > 1 ? parts.last : kEmptyString,
             style: defaultStyle,

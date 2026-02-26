@@ -38,43 +38,43 @@ class ExpandedHeadersDescription extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Expanded(
-            child: HeaderDescription(
-              header: firstHeader,
-              description: firstDescription,
-              descriptionTrailingWidget: firstTrailingWidget,
-              headerStyle: headerStyle ?? TypoBody.b2r,
-              descriptionStyle: descriptionStyle ?? TypoBody.b2s,
-              headerTextStyleColor: TextStyleColor.soft,
-              descriptionTextStyleColor: TextStyleColor.strong,
-              headerMaxLines: 2,
-              descriptionFlex: descriptionFlex,
-              extraVerticalWidget: firstExtraVerticalWidget,
-              extra: firstExtra,
-              spacing: Spacing.spacingV2,
-              descriptionWithMaxLine: firstDescriptionWithMaxLine,
-              descriptionMaxLines: firstDescriptionMaxLines,
-            ),
-          ),
-          Spacing.spacingH4,
-          Expanded(
-            child: HeaderDescription(
-              header: secondHeader,
-              description: secondDescription,
-              descriptionTrailingWidget: secondTrailingWidget,
-              headerStyle: headerStyle ?? TypoBody.b2r,
-              descriptionStyle: descriptionStyle ?? TypoBody.b2s,
-              headerTextStyleColor: TextStyleColor.soft,
-              descriptionTextStyleColor: TextStyleColor.strong,
-              headerMaxLines: 2,
-              descriptionFlex: descriptionFlex,
-              extraVerticalWidget: secondExtraVerticalWidget,
-              extra: secondExtra,
-              spacing: Spacing.spacingV2,
-            ),
-          ),
-        ],
-      );
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      Expanded(
+        child: HeaderDescription(
+          header: firstHeader,
+          description: firstDescription,
+          descriptionTrailingWidget: firstTrailingWidget,
+          headerStyle: headerStyle ?? TypoSecondary.b2r,
+          descriptionStyle: descriptionStyle ?? TypoSecondary.b2s,
+          headerTextStyleColor: TextStyleColor.soft,
+          descriptionTextStyleColor: TextStyleColor.strong,
+          headerMaxLines: 2,
+          descriptionFlex: descriptionFlex,
+          extraVerticalWidget: firstExtraVerticalWidget,
+          extra: firstExtra,
+          spacing: Spacing.spacingV2,
+          descriptionWithMaxLine: firstDescriptionWithMaxLine,
+          descriptionMaxLines: firstDescriptionMaxLines,
+        ),
+      ),
+      Spacing.spacingH4,
+      Expanded(
+        child: HeaderDescription(
+          header: secondHeader,
+          description: secondDescription,
+          descriptionTrailingWidget: secondTrailingWidget,
+          headerStyle: headerStyle ?? TypoSecondary.b2r,
+          descriptionStyle: descriptionStyle ?? TypoSecondary.b2s,
+          headerTextStyleColor: TextStyleColor.soft,
+          descriptionTextStyleColor: TextStyleColor.strong,
+          headerMaxLines: 2,
+          descriptionFlex: descriptionFlex,
+          extraVerticalWidget: secondExtraVerticalWidget,
+          extra: secondExtra,
+          spacing: Spacing.spacingV2,
+        ),
+      ),
+    ],
+  );
 }

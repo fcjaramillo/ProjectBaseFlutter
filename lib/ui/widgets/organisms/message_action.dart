@@ -29,7 +29,7 @@ class MessageAction extends StatelessWidget {
       Spacing.spacingV24,
       BaseText(title, style: TypoSubtitles.s2),
       Spacing.spacingV12,
-      BaseText.soft(subtitle, style: TypoBody.b2r),
+      BaseText.soft(subtitle, style: TypoSecondary.b2r),
       ...aditional,
     ],
   );

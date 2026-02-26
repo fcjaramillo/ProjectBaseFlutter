@@ -33,7 +33,7 @@ class InformationListTile extends StatelessWidget {
       if (name != null) ...<Widget>[
         BaseText(
           name!,
-          style: TypoBody.b2s.copyWith(
+          style: TypoSecondary.b2s.copyWith(
             fontWeight: FontWeight.w500,
             fontSize: titleFontSize,
           ),

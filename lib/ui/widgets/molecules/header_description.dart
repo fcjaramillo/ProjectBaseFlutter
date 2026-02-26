@@ -53,7 +53,7 @@ class HeaderDescription extends StatelessWidget {
     this.headerMaxLines,
     this.alignment,
     super.key,
-  }) : headerStyle = TypoBody.b2s,
+  }) : headerStyle = TypoSecondary.b2s,
        headerTextStyleColor = TextStyleColor.subtle;
 
   HeaderDescription.body2({
@@ -69,9 +69,9 @@ class HeaderDescription extends StatelessWidget {
     this.headerMaxLines,
     this.alignment,
     super.key,
-  }) : headerStyle = TypoBody.b2r,
+  }) : headerStyle = TypoSecondary.b2r,
        headerTextStyleColor = TextStyleColor.soft,
-       descriptionStyle = TypoBody.b2s,
+       descriptionStyle = TypoSecondary.b2s,
        descriptionTextStyleColor = TextStyleColor.strong;
 
   final String header;
@@ -97,7 +97,8 @@ class HeaderDescription extends StatelessWidget {
       BaseText.withTextStyleColor(
         header,
         textStyleColor: headerTextStyleColor ?? TextStyleColor.soft,
-        style: headerStyle ?? TypoBody.b3s.copyWith(fontSize: Layout.spaceML),
+        style:
+            headerStyle ?? TypoSecondary.b3s.copyWith(fontSize: Layout.spaceML),
         overflow: TextOverflow.ellipsis,
         minFontSize: headerStyle?.fontSize ?? Layout.spaceML,
         maxLines: headerMaxLines ?? 1,
@@ -112,7 +113,7 @@ class HeaderDescription extends StatelessWidget {
               description,
               textStyleColor:
                   descriptionTextStyleColor ?? TextStyleColor.strong,
-              style: descriptionStyle ?? TypoBody.b2r,
+              style: descriptionStyle ?? TypoSecondary.b2r,
               overflow: descriptionWithMaxLine || descriptionMaxLines > 0
                   ? TextOverflow.ellipsis
                   : TextOverflow.visible,

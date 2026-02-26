@@ -182,7 +182,7 @@ class MessageBottomSheet extends StatelessWidget {
                             textAlign: TextAlign.center,
                             style:
                                 subtitleStyle ??
-                                TypoBody.b1r.copyWith(
+                                TypoSecondary.b1r.copyWith(
                                   fontWeight: FontWeight.w400,
                                 ),
                           ),
@@ -222,7 +222,9 @@ class MessageBottomSheet extends StatelessWidget {
                     BaseText.soft(
                       postButton!,
                       textAlign: TextAlign.center,
-                      style: TypoBody.b1r.copyWith(fontWeight: FontWeight.w400),
+                      style: TypoSecondary.b1r.copyWith(
+                        fontWeight: FontWeight.w400,
+                      ),
                     ),
                     Spacing.spacingV24,
                   ],
@@ -256,7 +258,11 @@ class MessageBottomSheet extends StatelessWidget {
 
     if (shouldShowHeaderFirst) {
       widgets.add(
-        BaseText.soft(header!, style: TypoBody.b2r, textAlign: titleAligment),
+        BaseText.soft(
+          header!,
+          style: TypoSecondary.b2r,
+          textAlign: titleAligment,
+        ),
       );
     }
 
@@ -270,7 +276,11 @@ class MessageBottomSheet extends StatelessWidget {
 
     if (shouldShowHeaderLast) {
       widgets.add(
-        BaseText.soft(header!, style: TypoBody.b2r, textAlign: titleAligment),
+        BaseText.soft(
+          header!,
+          style: TypoSecondary.b2r,
+          textAlign: titleAligment,
+        ),
       );
     }
 

@@ -56,7 +56,10 @@ class _CustomShowMoreTextState extends State<CustomShowMoreText> {
         widget.formatDescription?.call(widget.description) ??
         widget.description;
 
-    final TextSpan textSpan = TextSpan(text: displayText, style: TypoBody.b2r);
+    final TextSpan textSpan = TextSpan(
+      text: displayText,
+      style: TypoSecondary.b2r,
+    );
 
     final TextPainter textPainter = TextPainter(
       text: textSpan,
@@ -92,9 +95,9 @@ class _CustomShowMoreTextState extends State<CustomShowMoreText> {
               widget.description,
           maxLines: isExpanded ? null : maxLines,
           overflow: isExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
-          style: TypoBody.b2r,
-          maxFontSize: TypoBody.b2r.fontSize,
-          minFontSize: TypoBody.b2r.fontSize,
+          style: TypoSecondary.b2r,
+          maxFontSize: TypoSecondary.b2r.fontSize,
+          minFontSize: TypoSecondary.b2r.fontSize,
         ),
         if (isOverflowing) ...<Widget>[
           Spacing.spacingV8,

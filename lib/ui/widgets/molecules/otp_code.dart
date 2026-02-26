@@ -69,7 +69,7 @@ class OtpCode extends StatelessWidget {
             focusNode: focusNodeOne,
             onChanged: focusOnChangedOne,
             keyboardType: TextInputType.number,
-            textStyle: TypoBody.b3r,
+            textStyle: TypoSecondary.b3r,
             borderColor: isEmptyOne
                 ? colorScheme.surfaceContainer
                 : colorScheme.outline,
@@ -87,7 +87,7 @@ class OtpCode extends StatelessWidget {
             focusNode: focusNodeTwo,
             onChanged: focusOnChangedTwo,
             keyboardType: TextInputType.number,
-            textStyle: TypoBody.b3r,
+            textStyle: TypoSecondary.b3r,
             borderColor: isEmptyTwo
                 ? colorScheme.surfaceContainer
                 : colorScheme.outline,
@@ -105,7 +105,7 @@ class OtpCode extends StatelessWidget {
             focusNode: focusNodeThree,
             onChanged: focusOnChangedThree,
             keyboardType: TextInputType.number,
-            textStyle: TypoBody.b3r,
+            textStyle: TypoSecondary.b3r,
             borderColor: isEmptyThree
                 ? colorScheme.surfaceContainer
                 : colorScheme.outline,
@@ -123,7 +123,7 @@ class OtpCode extends StatelessWidget {
             focusNode: focusNodeFour,
             onChanged: focusOnChangedFour,
             keyboardType: TextInputType.number,
-            textStyle: TypoBody.b3r,
+            textStyle: TypoSecondary.b3r,
             borderColor: isEmptyFour
                 ? colorScheme.surfaceContainer
                 : colorScheme.outline,
@@ -141,7 +141,7 @@ class OtpCode extends StatelessWidget {
             focusNode: focusNodeFive,
             onChanged: focusOnChangedFive,
             keyboardType: TextInputType.number,
-            textStyle: TypoBody.b3r,
+            textStyle: TypoSecondary.b3r,
             borderColor: isEmptyFive
                 ? colorScheme.surfaceContainer
                 : colorScheme.outline,
@@ -159,7 +159,7 @@ class OtpCode extends StatelessWidget {
             focusNode: focusNodeSix,
             onChanged: focusOnChangedSix,
             keyboardType: TextInputType.number,
-            textStyle: TypoBody.b3r,
+            textStyle: TypoSecondary.b3r,
             borderColor: isEmptySix
                 ? colorScheme.surfaceContainer
                 : colorScheme.outline,

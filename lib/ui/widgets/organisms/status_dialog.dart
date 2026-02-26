@@ -42,7 +42,7 @@ class StatusDialog extends StatelessWidget {
                 Spacing.spacingV24,
                 BaseText(
                   title ?? L10n.of(context).gActionNotAvailable,
-                  style: TypoBody.b1s,
+                  style: TypoSecondary.b1s,
                 ),
                 Spacing.spacingV16,
                 BaseText(

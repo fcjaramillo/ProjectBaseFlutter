@@ -15,42 +15,24 @@ enum TextStyleColor {
   success,
   warning,
   informative,
-  error,
-}
+  error;
 
-extension TextStyleColorExtension on TextStyleColor {
-  Color getColor(AppThemeColors theme) {
-    switch (this) {
-      case TextStyleColor.strong:
-        return theme.text.scale.strong;
-      case TextStyleColor.base:
-        return theme.text.scale.base;
-      case TextStyleColor.soft:
-        return theme.text.scale.soft;
-      case TextStyleColor.subtle:
-        return theme.text.scale.subtle;
-      case TextStyleColor.disabled:
-        return theme.text.scale.disabled;
-      case TextStyleColor.invert:
-        return theme.text.scale.invert;
-      case TextStyleColor.primary:
-        return theme.text.main.primary;
-      case TextStyleColor.secondary:
-        return theme.text.main.secondary;
-      case TextStyleColor.tertiary:
-        return theme.text.main.tertiary;
-      case TextStyleColor.success:
-        return theme.text.feedbacks.success;
-      case TextStyleColor.error:
-        return theme.text.feedbacks.error;
-      case TextStyleColor.informative:
-        return theme.text.feedbacks.informative;
-      case TextStyleColor.warning:
-        return theme.text.feedbacks.warning;
-      case TextStyleColor.noChangeStrong:
-        return theme.text.noChange.strong;
-      case TextStyleColor.noChangeSubtle:
-        return theme.text.noChange.subtle;
-    }
-  }
+  static Color getColor(AppThemeColors theme, TextStyleColor textStyleColor) =>
+      switch (textStyleColor) {
+        TextStyleColor.strong => theme.text.scale.strong,
+        TextStyleColor.base => theme.text.scale.base,
+        TextStyleColor.soft => theme.text.scale.soft,
+        TextStyleColor.subtle => theme.text.scale.subtle,
+        TextStyleColor.disabled => theme.text.scale.disabled,
+        TextStyleColor.invert => theme.text.scale.invert,
+        TextStyleColor.primary => theme.primary.strong,
+        TextStyleColor.secondary => theme.text.main.secondary,
+        TextStyleColor.tertiary => theme.text.main.tertiary,
+        TextStyleColor.success => theme.text.feedbacks.success,
+        TextStyleColor.error => theme.text.feedbacks.error,
+        TextStyleColor.informative => theme.text.feedbacks.informative,
+        TextStyleColor.warning => theme.text.feedbacks.warning,
+        TextStyleColor.noChangeStrong => theme.text.noChange.strong,
+        TextStyleColor.noChangeSubtle => theme.text.noChange.subtle,
+      };
 }

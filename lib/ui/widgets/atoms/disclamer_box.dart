@@ -16,7 +16,7 @@ class BaseDisclamerBox extends StatelessWidget {
     ),
     child: Padding(
       padding: BasePadding.padding_12,
-      child: BaseText(text, style: TypoBody.b3r),
+      child: BaseText(text, style: TypoSecondary.b3r),
     ),
   );
 }

@@ -28,7 +28,7 @@ class TourInformationItem extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            BaseText(text, style: TypoBody.b2r),
+            BaseText(text, style: TypoSecondary.b2r),
             Spacing.spacingV24,
             Row(
               children: <Widget>[

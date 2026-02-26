@@ -31,7 +31,7 @@ class Counter extends StatelessWidget {
       Spacing.spacingH16,
       SizedBox(
         width: 20,
-        child: Center(child: BaseText(text, style: TypoBody.b1r)),
+        child: Center(child: BaseText(text, style: TypoSecondary.b1r)),
       ),
       Spacing.spacingH16,
       GestureDetector(

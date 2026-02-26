@@ -27,7 +27,7 @@ class BaseRadioTile extends StatelessWidget {
             children: <Widget>[
               BaseCustomRadio(isSelected: isSelected),
               Spacing.spacingH8,
-              BaseText(text, style: TypoBody.b2s),
+              BaseText(text, style: TypoSecondary.b2s),
             ],
           ),
         ),

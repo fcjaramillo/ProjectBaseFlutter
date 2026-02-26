@@ -40,7 +40,11 @@ class CompleteRegisterBottomSheetBody extends StatelessWidget {
                 Theme.of(context).extension<CustomThemeColors>()!.info,
           ),
           Spacing.spacingV24,
-          BaseText(subtitle, style: TypoBody.b2r, textAlign: TextAlign.center),
+          BaseText(
+            subtitle,
+            style: TypoSecondary.b2r,
+            textAlign: TextAlign.center,
+          ),
           Spacing.spacingV24,
           BaseFilledButton(
             isFullWidth: true,

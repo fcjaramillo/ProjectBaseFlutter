@@ -37,7 +37,7 @@ class HeaderRichText extends StatelessWidget {
       BaseText.withTextStyleColor(
         header,
         textStyleColor: TextStyleColor.soft,
-        style: headerStyle ?? TypoBody.b2r,
+        style: headerStyle ?? TypoSecondary.b2r,
         overflow: TextOverflow.ellipsis,
         maxLines: headerMaxLines ?? 1,
       ),
@@ -46,8 +46,8 @@ class HeaderRichText extends StatelessWidget {
         previousTextHasSpace: previousTextHasSpace,
         textPrimary: richPrimary,
         textSecondary: richSecondary,
-        stylePrimary: richPrimaryStyle ?? TypoBody.b2s,
-        styleSecondary: richSecondaryStyle ?? TypoBody.b3r,
+        stylePrimary: richPrimaryStyle ?? TypoSecondary.b2s,
+        styleSecondary: richSecondaryStyle ?? TypoSecondary.b3r,
         colorPrimary:
             richPrimaryColor ?? Theme.of(context).colorScheme.onSurface,
         colorSecondary:

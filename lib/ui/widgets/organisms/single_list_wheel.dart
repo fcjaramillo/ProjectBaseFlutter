@@ -60,10 +60,10 @@ class SingleListWheel<T> extends StatelessWidget {
                 child: isSelected
                     ? BaseText(
                         displayText,
-                        style: TypoBody.b1r,
+                        style: TypoSecondary.b1r,
                         textAlign: TextAlign.center,
                       )
-                    : BaseText.subtle(displayText, style: TypoBody.b3r),
+                    : BaseText.subtle(displayText, style: TypoSecondary.b3r),
               );
             },
             childCount: items.length,
