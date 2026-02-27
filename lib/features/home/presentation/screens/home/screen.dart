@@ -34,6 +34,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         // About Section
         _buildAboutSection(context, responsive),
 
+        // Circles Gallery Section
+        _buildCirclesSection(context, responsive),
+
         // Strategic Axes Section
         _buildAxesSection(context, responsive),
 
@@ -162,6 +165,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Expanded(child: BaseText(text, style: TypoSecondary.b2r)),
         ],
       );
+
+  Widget _buildCirclesSection(
+    BuildContext context,
+    Responsive responsive,
+  ) => FadeImageScrollDelegate(
+    images: const <String>[
+      Jpgs.kCircle1,
+      Jpgs.kCircle2,
+      Jpgs.kCircle3,
+      Jpgs.kCircle4,
+    ],
+  );
 
   Widget _buildAxesSection(BuildContext context, Responsive responsive) {
     final int crossAxisCount = responsive.gridColumns(desktop: 4);

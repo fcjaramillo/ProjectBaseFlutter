@@ -15,3 +15,4 @@ part 'svgs.dart';
 part 'typography.dart';
 part 'typography_ions.dart';
 part 'urls.dart';
+part 'jpgs.dart';

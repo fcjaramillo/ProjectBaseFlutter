@@ -8,10 +8,12 @@ import 'package:base/typing/extensions/extensions.dart';
 import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 import 'package:flutter/material.dart' hide Colors;
 import 'package:flutter/semantics.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 
+import '../../../core/dependencies/scroll_provider.dart';
 import '../../../typing/entities/entities.dart';
 import '../../../typing/enums/enums.dart';
 import '../../ions/ions.dart';

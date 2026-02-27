@@ -1,14 +1,16 @@
 part of 'organisms.dart';
 
-class AppShell extends StatelessWidget {
+class AppShell extends ConsumerWidget {
   const AppShell({required this.child, super.key});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Responsive responsive = Responsive.of(context);
     final bool isMobile = responsive.width < Breakpoints.tablet;
+    final ScrollController scrollController =
+        ref.watch(appScrollControllerProvider);
 
     return Scaffold(
       drawer: isMobile ? const _MobileDrawer() : null,
@@ -17,6 +19,7 @@ class AppShell extends StatelessWidget {
           const CampaignAppBar(),
           Expanded(
             child: SingleChildScrollView(
+              controller: scrollController,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
