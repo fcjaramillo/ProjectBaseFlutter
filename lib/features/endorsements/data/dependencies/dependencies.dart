@@ -2,10 +2,7 @@ library;
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../core/apis/apis.dart';
-import '../../../../core/dependencies/dependencies.dart';
-import '../data_sources/data_sources.dart';
+import '../repositories/repositories.dart';
 
-part 'base.dart';
-
+part 'endorsements_data_deps.dart';
 part 'dependencies.g.dart';

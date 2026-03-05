@@ -5,21 +5,40 @@ class HomeViewModel extends _$HomeViewModel {
   @override
   HomeState build() => HomeState.initial();
 
-  void initState() {}
-  Future<void> getExample() async {
-    final ResultDef<bool> result = await ref
-        .read(getExampleUseCaseProvider)
-        .call();
+  Future<void> loadHomeData() async {
+    state = state.copyWith(isLoading: true);
 
+    await Future.wait(<Future<void>>[
+      _loadEvents(),
+      _loadNews(),
+    ]);
+
+    state = state.copyWith(isLoading: false);
+  }
+
+  Future<void> _loadEvents() async {
+    final ResultDef<List<CampaignEvent>> result =
+        await ref.read(getFeaturedEventsUseCaseProvider).call();
     result.when(
-      fail: print,
-      success: (bool success) {
-        state = state.copyWith(isCorrectGet: success);
+      fail: (BackError e) {
+        state = state.copyWith(error: e.description);
+      },
+      success: (List<CampaignEvent> events) {
+        state = state.copyWith(featuredEvents: events);
       },
     );
   }
 
-  void onTap() {
-    state = state.copyWith(clicks: state.clicks + 1);
+  Future<void> _loadNews() async {
+    final ResultDef<List<CampaignNews>> result =
+        await ref.read(getFeaturedNewsUseCaseProvider).call();
+    result.when(
+      fail: (BackError e) {
+        state = state.copyWith(error: e.description);
+      },
+      success: (List<CampaignNews> news) {
+        state = state.copyWith(featuredNews: news);
+      },
+    );
   }
 }

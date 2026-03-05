@@ -1,27 +1,176 @@
-import 'package:flutter/material.dart' hide Colors;
-import 'package:iconsax/iconsax.dart';
+library;
 
+import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../../typing/entities/campaign/endorsement.dart';
 import '../../../../typing/extensions/extensions.dart';
+import '../../../../typing/result/result.dart';
 import '../../../../ui/ions/ions.dart';
 import '../../../../ui/utils/utils.dart';
 import '../../../../ui/widgets/atoms/atoms.dart';
 import '../../../../ui/widgets/organisms/organisms.dart';
+import '../../domain/dependencies/dependencies.dart';
 
-class EndorsementsScreen extends StatelessWidget {
+part 'endorsements_screen.g.dart';
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+
+class EndorsementsState {
+  EndorsementsState({
+    required this.endorsements,
+    required this.isLoading,
+    this.selectedType,
+    this.error,
+  });
+
+  final List<Endorsement> endorsements;
+  final bool isLoading;
+  final String? selectedType;
+  final String? error;
+
+  factory EndorsementsState.initial() => EndorsementsState(
+        endorsements: <Endorsement>[],
+        isLoading: false,
+      );
+
+  List<Endorsement> get filteredEndorsements {
+    if (selectedType == null || selectedType == 'Todos') {
+      return endorsements;
+    }
+    final EndorsementType? filterType = _typeFromLabel(selectedType);
+    if (filterType == null) {
+      return endorsements;
+    }
+    return endorsements
+        .where((Endorsement e) => e.type == filterType)
+        .toList();
+  }
+
+  static EndorsementType? _typeFromLabel(String? label) {
+    switch (label) {
+      case 'Personal':
+        return EndorsementType.personal;
+      case 'Organizaciones':
+        return EndorsementType.organizacion;
+      case 'Politico':
+        return EndorsementType.politico;
+      case 'Empresarial':
+        return EndorsementType.empresarial;
+      default:
+        return null;
+    }
+  }
+
+  EndorsementsState copyWith({
+    List<Endorsement>? endorsements,
+    bool? isLoading,
+    String? selectedType,
+    String? error,
+    bool clearError = false,
+    bool clearSelectedType = false,
+  }) =>
+      EndorsementsState(
+        endorsements: endorsements ?? this.endorsements,
+        isLoading: isLoading ?? this.isLoading,
+        selectedType:
+            clearSelectedType ? null : selectedType ?? this.selectedType,
+        error: clearError ? null : error ?? this.error,
+      );
+}
+
+// ---------------------------------------------------------------------------
+// ViewModel
+// ---------------------------------------------------------------------------
+
+@riverpod
+class EndorsementsViewModel extends _$EndorsementsViewModel {
+  @override
+  EndorsementsState build() => EndorsementsState.initial();
+
+  Future<void> loadEndorsements() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    final ResultDef<List<Endorsement>> result =
+        await ref.read(getEndorsementsUseCaseProvider).call();
+
+    result.when(
+      fail: (BackError error) {
+        state = state.copyWith(
+          isLoading: false,
+          error: error.description ?? 'Error al cargar los respaldos',
+        );
+      },
+      success: (List<Endorsement> endorsements) {
+        state = state.copyWith(
+          isLoading: false,
+          endorsements: endorsements,
+        );
+      },
+    );
+  }
+
+  void setTypeFilter(String? type) {
+    state = state.copyWith(
+      selectedType: type,
+      clearSelectedType: type == null,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen
+// ---------------------------------------------------------------------------
+
+class EndorsementsScreen extends ConsumerStatefulWidget {
   const EndorsementsScreen({super.key});
 
   @override
+  ConsumerState<EndorsementsScreen> createState() =>
+      _EndorsementsScreenState();
+}
+
+class _EndorsementsScreenState extends ConsumerState<EndorsementsScreen> {
+  final List<String> _filterTypes = <String>[
+    'Todos',
+    'Personal',
+    'Organizaciones',
+    'Politico',
+    'Empresarial',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(endorsementsViewModelProvider.notifier).loadEndorsements();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final EndorsementsState endorsementsState =
+        ref.watch(endorsementsViewModelProvider);
     final Responsive responsive = Responsive.of(context);
     final bool isMobile = responsive.width < 768;
-    final bool isTablet = responsive.width >= 768 && responsive.width < 1200;
+    final bool isTablet =
+        responsive.width >= 768 && responsive.width < 1200;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         _buildHeroSection(context, isMobile),
-        _buildTestimonialsSection(context, isMobile, isTablet),
-        _buildOrganizationsSection(context, isMobile),
+        _buildFilterSection(context, isMobile, endorsementsState),
+        _buildEndorsementsSection(
+          context,
+          isMobile,
+          isTablet,
+          endorsementsState,
+        ),
         _buildCommunitySection(context, isMobile, isTablet),
         _buildCtaSection(context, isMobile),
       ],
@@ -69,59 +218,71 @@ class EndorsementsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTestimonialsSection(
-      BuildContext context, bool isMobile, bool isTablet) {
-    final List<Map<String, String>> testimonials = <Map<String, String>>[
-      <String, String>{
-        'name': 'Maria Elena Rodriguez',
-        'title': 'Presidenta JAC Comuna 3',
-        'quote':
-            'Por primera vez veo un candidato que realmente escucha a la '
-                'comunidad. William ha caminado nuestras calles y conoce '
-                'nuestros problemas de primera mano.',
-      },
-      <String, String>{
-        'name': 'Carlos Andres Munoz',
-        'title': 'Empresario local',
-        'quote':
-            'Como empresario payanés, creo en las propuestas de desarrollo '
-                'economico de William. Es momento de apostar por nuestra '
-                'ciudad y generar empleo local.',
-      },
-      <String, String>{
-        'name': 'Luz Marina Caicedo',
-        'title': 'Docente',
-        'quote':
-            'La educacion es la base del progreso. El compromiso de William '
-                'con la educacion de nuestros ninos y jovenes es lo que '
-                'Popayan necesita.',
-      },
-      <String, String>{
-        'name': 'Pedro Jose Valencia',
-        'title': 'Lider juvenil',
-        'quote':
-            'Los jovenes de Popayan necesitamos oportunidades. Por primera '
-                'vez siento que un candidato nos tiene en cuenta y quiere '
-                'construir con nosotros.',
-      },
-      <String, String>{
-        'name': 'Ana Lucia Gomez',
-        'title': 'Madre de familia',
-        'quote':
-            'Quiero que mis hijos crezcan en una ciudad segura. La '
-                'trayectoria de William en seguridad me da confianza en '
-                'que puede lograrlo.',
-      },
-      <String, String>{
-        'name': 'Roberto Sanchez',
-        'title': 'Adulto mayor',
-        'quote':
-            'He vivido en Popayan toda mi vida. William representa los '
-                'valores que necesitamos: honestidad, trabajo y compromiso '
-                'con la gente.',
-      },
-    ];
+  Widget _buildFilterSection(
+    BuildContext context,
+    bool isMobile,
+    EndorsementsState endorsementsState,
+  ) {
+    final String selectedType =
+        endorsementsState.selectedType ?? 'Todos';
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 80,
+        vertical: 30,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          BaseText(
+            'Filtrar por tipo:',
+            style: TypoSubtitles.s2.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            children: _filterTypes.map((String type) {
+              final bool isSelected = selectedType == type;
+              return FilterChip(
+                label: Text(type),
+                selected: isSelected,
+                onSelected: (bool selected) {
+                  ref
+                      .read(endorsementsViewModelProvider.notifier)
+                      .setTypeFilter(type);
+                },
+                backgroundColor:
+                    Theme.of(context).appColors.neutral.subtle,
+                selectedColor:
+                    Theme.of(context).appColors.primary.soft,
+                checkmarkColor:
+                    Theme.of(context).appColors.primary.strong,
+                labelStyle: TypoSecondary.b3r.copyWith(
+                  color: isSelected
+                      ? Theme.of(context).appColors.primary.strong
+                      : null,
+                  fontWeight:
+                      isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+                side: BorderSide(
+                  color: isSelected
+                      ? Theme.of(context).appColors.primary.strong
+                      : Theme.of(context).appColors.neutral.soft,
+                ),
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
 
+  Widget _buildEndorsementsSection(
+    BuildContext context,
+    bool isMobile,
+    bool isTablet,
+    EndorsementsState endorsementsState,
+  ) {
     final int crossAxisCount = isMobile ? 1 : (isTablet ? 2 : 3);
 
     return Container(
@@ -129,106 +290,73 @@ class EndorsementsScreen extends StatelessWidget {
         horizontal: isMobile ? 20 : 80,
         vertical: isMobile ? 60 : 100,
       ),
-      child: Column(
-        children: <Widget>[
-          const SectionHeader(
-            title: 'Testimonios',
-            subtitle: 'Lo que dicen quienes nos apoyan.',
-          ),
-          SizedBox(height: isMobile ? 40 : 60),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: crossAxisCount,
-              crossAxisSpacing: 24,
-              mainAxisSpacing: 24,
-              childAspectRatio: isMobile ? 1.3 : 1.0,
-            ),
-            itemCount: testimonials.length,
-            itemBuilder: (BuildContext context, int index) {
-              final Map<String, String> testimonial = testimonials[index];
-              return TestimonialCard(
-                name: testimonial['name']!,
-                title: testimonial['title'],
-                quote: testimonial['quote']!,
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOrganizationsSection(BuildContext context, bool isMobile) {
-    final List<Map<String, dynamic>> organizations = <Map<String, dynamic>>[
-      <String, dynamic>{
-        'name': 'Asociacion de Comerciantes',
-        'icon': Iconsax.shop,
-      },
-      <String, dynamic>{
-        'name': 'Federacion de Juntas',
-        'icon': Iconsax.people,
-      },
-      <String, dynamic>{
-        'name': 'Gremio de Artesanos',
-        'icon': Iconsax.brush_1,
-      },
-      <String, dynamic>{
-        'name': 'Asociacion de Mujeres',
-        'icon': Iconsax.woman,
-      },
-      <String, dynamic>{
-        'name': 'Colectivo Juvenil',
-        'icon': Iconsax.user_octagon,
-      },
-      <String, dynamic>{
-        'name': 'Agricultores del Cauca',
-        'icon': Iconsax.tree,
-      },
-    ];
-
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : 80,
-        vertical: isMobile ? 60 : 100,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).appColors.tertiary.subtle,
-      ),
-      child: Column(
-        children: <Widget>[
-          const SectionHeader(
-            title: 'Organizaciones que nos Respaldan',
-            subtitle: 'Gremios y colectivos que creen en el cambio.',
-          ),
-          SizedBox(height: isMobile ? 40 : 60),
-          Wrap(
-            spacing: 24,
-            runSpacing: 24,
-            alignment: WrapAlignment.center,
-            children: organizations
-                .map(
-                  (Map<String, dynamic> org) => _OrganizationCard(
-                    name: org['name'] as String,
-                    icon: org['icon'] as IconData,
-                    isMobile: isMobile,
+      child: endorsementsState.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : endorsementsState.error != null
+              ? Center(
+                  child: BaseText(
+                    endorsementsState.error!,
+                    style: TypoSecondary.b2r,
                   ),
                 )
-                .toList(),
-          ),
-        ],
-      ),
+              : endorsementsState.filteredEndorsements.isEmpty
+                  ? Center(
+                      child: BaseText(
+                        'No hay respaldos disponibles.',
+                        style: TypoSecondary.b2r,
+                      ),
+                    )
+                  : Column(
+                      children: <Widget>[
+                        const SectionHeader(
+                          title: 'Testimonios y Respaldos',
+                          subtitle:
+                              'Lo que dicen quienes nos apoyan.',
+                        ),
+                        SizedBox(height: isMobile ? 40 : 60),
+                        GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: crossAxisCount,
+                            crossAxisSpacing: 24,
+                            mainAxisSpacing: 24,
+                            childAspectRatio: isMobile ? 1.3 : 1.0,
+                          ),
+                          itemCount: endorsementsState
+                              .filteredEndorsements.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            final Endorsement endorsement =
+                                endorsementsState
+                                    .filteredEndorsements[index];
+                            return TestimonialCard(
+                              name: endorsement.name,
+                              title: endorsement.title,
+                              quote: endorsement.quote ?? '',
+                              imageUrl: endorsement.imageUrl,
+                              organization: endorsement.organization,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
     );
   }
 
   Widget _buildCommunitySection(
-      BuildContext context, bool isMobile, bool isTablet) {
+    BuildContext context,
+    bool isMobile,
+    bool isTablet,
+  ) {
     final List<Map<String, String>> stats = <Map<String, String>>[
       <String, String>{'number': '50+', 'label': 'Lideres comunales'},
       <String, String>{'number': '30+', 'label': 'Organizaciones'},
       <String, String>{'number': '1000+', 'label': 'Voluntarios'},
-      <String, String>{'number': '9', 'label': 'Comunas representadas'},
+      <String, String>{
+        'number': '9',
+        'label': 'Comunas representadas',
+      },
     ];
 
     return Container(
@@ -295,7 +423,8 @@ class EndorsementsScreen extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor:
                   Theme.of(context).appColors.neutralNoChange.subtle,
-              foregroundColor: Theme.of(context).appColors.secondary.strong,
+              foregroundColor:
+                  Theme.of(context).appColors.secondary.strong,
               padding: EdgeInsets.symmetric(
                 horizontal: isMobile ? 32 : 48,
                 vertical: isMobile ? 16 : 20,
@@ -308,58 +437,9 @@ class EndorsementsScreen extends StatelessWidget {
   }
 }
 
-class _OrganizationCard extends StatelessWidget {
-  const _OrganizationCard({
-    required this.name,
-    required this.icon,
-    required this.isMobile,
-  });
-
-  final String name;
-  final IconData icon;
-  final bool isMobile;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: isMobile ? double.infinity : 180,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: Theme.of(context).appColors.neutral.subtle,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-            color: Theme.of(context).appColors.opacity.base,
-            blurRadius: 8,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        children: <Widget>[
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Theme.of(context).appColors.primary.soft,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Icon(
-              icon,
-              size: 32,
-              color: Theme.of(context).appColors.primary.strong,
-            ),
-          ),
-          const SizedBox(height: 16),
-          BaseText(
-            name,
-            style: TypoSecondary.b3r.copyWith(fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
+// ---------------------------------------------------------------------------
+// Private widgets
+// ---------------------------------------------------------------------------
 
 class _StatCard extends StatelessWidget {
   const _StatCard({

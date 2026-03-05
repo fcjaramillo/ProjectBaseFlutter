@@ -1,45 +1,130 @@
+library;
+
 import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../typing/entities/campaign/candidate_info.dart';
 import '../../../../typing/extensions/extensions.dart';
+import '../../../../typing/result/result.dart';
 import '../../../../ui/ions/ions.dart';
 import '../../../../ui/routes/routes.dart';
 import '../../../../ui/utils/utils.dart';
 import '../../../../ui/widgets/atoms/atoms.dart';
 import '../../../../ui/widgets/organisms/organisms.dart';
+import '../../domain/dependencies/dependencies.dart';
 
-class CandidateScreen extends StatelessWidget {
+part 'candidate_screen.g.dart';
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+
+class _CandidateState {
+  const _CandidateState({this.candidate, this.isLoading = false, this.error});
+
+  final CandidateInfo? candidate;
+  final bool isLoading;
+  final String? error;
+
+  _CandidateState copyWith({
+    CandidateInfo? candidate,
+    bool? isLoading,
+    String? error,
+  }) => _CandidateState(
+    candidate: candidate ?? this.candidate,
+    isLoading: isLoading ?? this.isLoading,
+    error: error,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ViewModel
+// ---------------------------------------------------------------------------
+
+@riverpod
+class _CandidateViewModel extends _$CandidateViewModel {
+  @override
+  _CandidateState build() => const _CandidateState();
+
+  Future<void> loadCandidate() async {
+    state = state.copyWith(isLoading: true);
+
+    final ResultDef<CandidateInfo?> result = await ref
+        .read(getCandidateInfoUseCaseProvider)
+        .call();
+
+    result.when(
+      fail: (BackError error) {
+        state = state.copyWith(
+          isLoading: false,
+          error: error.description ?? 'Error al cargar candidato',
+        );
+      },
+      success: (CandidateInfo? candidate) {
+        state = state.copyWith(isLoading: false, candidate: candidate);
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen
+// ---------------------------------------------------------------------------
+
+class CandidateScreen extends ConsumerStatefulWidget {
   const CandidateScreen({super.key});
 
   @override
+  ConsumerState<CandidateScreen> createState() => _CandidateScreenState();
+}
+
+class _CandidateScreenState extends ConsumerState<CandidateScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(_candidateViewModelProvider.notifier).loadCandidate();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final _CandidateState state = ref.watch(_candidateViewModelProvider);
     final Responsive responsive = Responsive.of(context);
     final bool isMobile = responsive.width < 768;
     final bool isTablet = responsive.width >= 768 && responsive.width < 1200;
 
+    if (state.isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 120),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        // Hero Section
-        _buildHeroSection(context, isMobile),
-
-        // Biography Section
-        _buildBiographySection(context, isMobile),
-
-        // Values Section
-        _buildValuesSection(context, isMobile, isTablet),
-
-        // Achievements Section
+        _buildHeroSection(context, isMobile, state),
+        _buildBiographySection(context, isMobile, state),
+        // Circles Gallery Section
+        _buildCirclesSection(context, responsive),
+        _buildValuesSection(context, isMobile, isTablet, state),
         _buildAchievementsSection(context, isMobile),
-
-        // CTA to Life Story
         _buildCtaSection(context, isMobile),
       ],
     );
   }
 
-  Widget _buildHeroSection(BuildContext context, bool isMobile) => Container(
+  Widget _buildHeroSection(
+    BuildContext context,
+    bool isMobile,
+    _CandidateState state,
+  ) => Container(
     height: isMobile ? 400 : 500,
     width: double.infinity,
     decoration: BoxDecoration(
@@ -54,14 +139,12 @@ class CandidateScreen extends StatelessWidget {
     ),
     child: Stack(
       children: <Widget>[
-        // Background pattern
         Positioned.fill(
           child: Opacity(
             opacity: 0.1,
             child: CustomPaint(painter: _PatternPainter()),
           ),
         ),
-        // Content
         Center(
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 80),
@@ -69,7 +152,6 @@ class CandidateScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 if (!isMobile) ...<Widget>[
-                  // Candidate image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(20),
                     child: Image.asset(
@@ -94,7 +176,8 @@ class CandidateScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 8),
                       BaseText.noChangeSubtle(
-                        'WILLIAM CAMPIÑO',
+                        state.candidate?.name.toUpperCase() ??
+                            'WILLIAM CAMPINO',
                         style: (isMobile ? TypoPrimary.h2 : TypoPrimary.h1)
                             .copyWith(fontWeight: FontWeight.bold),
                         textAlign: isMobile
@@ -103,7 +186,9 @@ class CandidateScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       BaseText.noChangeSubtle(
-                        'Un lider con experiencia, compromiso y amor por Popayan',
+                        state.candidate?.slogan ??
+                            'Un lider con experiencia, compromiso '
+                                'y amor por Popayan',
                         style: (isMobile
                             ? TypoSecondary.b2r
                             : TypoSecondary.b1r),
@@ -125,6 +210,7 @@ class CandidateScreen extends StatelessWidget {
   Widget _buildBiographySection(
     BuildContext context,
     bool isMobile,
+    _CandidateState state,
   ) => Container(
     padding: EdgeInsets.symmetric(
       horizontal: isMobile ? 20 : 80,
@@ -135,7 +221,8 @@ class CandidateScreen extends StatelessWidget {
         const SectionHeader(
           title: 'Biografia',
           subtitle:
-              'Una vida dedicada al servicio publico y al bienestar de la comunidad.',
+              'Una vida dedicada al servicio publico y al bienestar '
+              'de la comunidad.',
         ),
         SizedBox(height: isMobile ? 40 : 60),
         ConstrainedBox(
@@ -143,20 +230,38 @@ class CandidateScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              BaseText(
-                'William Campino nacio en Popayan, Cauca, y desde joven mostro un profundo compromiso con su comunidad. Con mas de 24 años de servicio en la Policia Nacional, ha demostrado su dedicacion a la seguridad y el bienestar de los ciudadanos.',
-                style: TypoSecondary.b1r.copyWith(height: 1.8),
-              ),
-              const SizedBox(height: 24),
-              BaseText(
-                'Su trayectoria profesional incluye mas de 18 años liderando equipos de Comunicaciones Estrategicas, donde desarrollo habilidades unicas para conectar con las personas y entender sus necesidades reales.',
-                style: TypoSecondary.b1r.copyWith(height: 1.8),
-              ),
-              const SizedBox(height: 24),
-              BaseText(
-                'Reconocido con 111 felicitaciones especiales y 19 condecoraciones de diversas instituciones, William Campino representa el compromiso, la honestidad y el trabajo arduo que Popayan necesita para avanzar hacia un futuro mejor.',
-                style: TypoSecondary.b1r.copyWith(height: 1.8),
-              ),
+              if (state.candidate?.biography != null) ...<Widget>[
+                BaseText(
+                  state.candidate!.biography!,
+                  style: TypoSecondary.b1r.copyWith(height: 1.8),
+                ),
+              ] else ...<Widget>[
+                BaseText(
+                  'William Campino nacio en Popayan, Cauca, y desde '
+                  'joven mostro un profundo compromiso con su comunidad. '
+                  'Con mas de 24 anos de servicio en la Policia Nacional, '
+                  'ha demostrado su dedicacion a la seguridad y el '
+                  'bienestar de los ciudadanos.',
+                  style: TypoSecondary.b1r.copyWith(height: 1.8),
+                ),
+                const SizedBox(height: 24),
+                BaseText(
+                  'Su trayectoria profesional incluye mas de 18 anos '
+                  'liderando equipos de Comunicaciones Estrategicas, donde '
+                  'desarrollo habilidades unicas para conectar con las '
+                  'personas y entender sus necesidades reales.',
+                  style: TypoSecondary.b1r.copyWith(height: 1.8),
+                ),
+                const SizedBox(height: 24),
+                BaseText(
+                  'Reconocido con 111 felicitaciones especiales y 19 '
+                  'condecoraciones de diversas instituciones, William '
+                  'Campino representa el compromiso, la honestidad y el '
+                  'trabajo arduo que Popayan necesita para avanzar hacia '
+                  'un futuro mejor.',
+                  style: TypoSecondary.b1r.copyWith(height: 1.8),
+                ),
+              ],
             ],
           ),
         ),
@@ -164,12 +269,23 @@ class CandidateScreen extends StatelessWidget {
     ),
   );
 
+  Widget _buildCirclesSection(BuildContext context, Responsive responsive) =>
+      FadeImageScrollDelegate(
+        images: const <String>[
+          Jpgs.kCircle1,
+          Jpgs.kCircle2,
+          Jpgs.kCircle3,
+          Jpgs.kCircle4,
+        ],
+      );
+
   Widget _buildValuesSection(
     BuildContext context,
     bool isMobile,
     bool isTablet,
+    _CandidateState state,
   ) {
-    final List<Map<String, dynamic>> values = <Map<String, dynamic>>[
+    final List<Map<String, dynamic>> defaultValues = <Map<String, dynamic>>[
       <String, dynamic>{
         'icon': Iconsax.heart,
         'title': 'Compromiso',
@@ -193,6 +309,19 @@ class CandidateScreen extends StatelessWidget {
         'description': 'Mas de dos decadas de servicio publico reconocido.',
       },
     ];
+
+    final List<Map<String, dynamic>> displayValues =
+        state.candidate?.values != null
+        ? state.candidate!.values!
+              .map(
+                (String v) => <String, dynamic>{
+                  'icon': Iconsax.star,
+                  'title': v,
+                  'description': '',
+                },
+              )
+              .toList()
+        : defaultValues;
 
     final int crossAxisCount = isMobile ? 1 : (isTablet ? 2 : 4);
 
@@ -220,9 +349,9 @@ class CandidateScreen extends StatelessWidget {
               mainAxisSpacing: 24,
               childAspectRatio: isMobile ? 2.5 : 1.3,
             ),
-            itemCount: values.length,
+            itemCount: displayValues.length,
             itemBuilder: (BuildContext context, int index) {
-              final Map<String, dynamic> value = values[index];
+              final Map<String, dynamic> value = displayValues[index];
               return _ValueCard(
                 icon: value['icon'] as IconData,
                 title: value['title'] as String,
@@ -239,12 +368,12 @@ class CandidateScreen extends StatelessWidget {
     final List<Map<String, String>> achievements = <Map<String, String>>[
       <String, String>{
         'number': '+24',
-        'label': 'años de servicio',
+        'label': 'anos de servicio',
         'detail': 'en la Policia Nacional',
       },
       <String, String>{
         'number': '+18',
-        'label': 'años de liderazgo',
+        'label': 'anos de liderazgo',
         'detail': 'en Comunicaciones Estrategicas',
       },
       <String, String>{
@@ -310,7 +439,8 @@ class CandidateScreen extends StatelessWidget {
         ),
         SizedBox(height: isMobile ? 16 : 24),
         BaseText.noChangeSubtle(
-          'Descubre mi trayectoria de vida, desde mis inicios hasta mi compromiso con Popayan.',
+          'Descubre mi trayectoria de vida, desde mis inicios hasta mi '
+          'compromiso con Popayan.',
           style: isMobile ? TypoSecondary.b2r : TypoSecondary.b1r,
           textAlign: TextAlign.center,
         ),
@@ -332,6 +462,10 @@ class CandidateScreen extends StatelessWidget {
     ),
   );
 }
+
+// ---------------------------------------------------------------------------
+// Private Widgets
+// ---------------------------------------------------------------------------
 
 class _ValueCard extends StatelessWidget {
   const _ValueCard({
@@ -379,14 +513,16 @@ class _ValueCard extends StatelessWidget {
           style: TypoSubtitles.s2.copyWith(fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
         ),
-        const SizedBox(height: 8),
-        BaseText(
-          description,
-          style: TypoSecondary.b3r.copyWith(
-            color: Theme.of(context).appColors.text.scale.soft,
+        if (description.isNotEmpty) ...<Widget>[
+          const SizedBox(height: 8),
+          BaseText(
+            description,
+            style: TypoSecondary.b3r.copyWith(
+              color: Theme.of(context).appColors.text.scale.soft,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
+        ],
       ],
     ),
   );

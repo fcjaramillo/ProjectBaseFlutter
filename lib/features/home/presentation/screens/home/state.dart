@@ -2,24 +2,29 @@ part of 'home.dart';
 
 class HomeState {
   HomeState({
-    required this.isCorrectGet,
-    required this.clicks,
+    this.featuredEvents = const <CampaignEvent>[],
+    this.featuredNews = const <CampaignNews>[],
+    this.isLoading = false,
+    this.error,
   });
 
-  final bool isCorrectGet;
-  final int clicks;
+  final List<CampaignEvent> featuredEvents;
+  final List<CampaignNews> featuredNews;
+  final bool isLoading;
+  final String? error;
 
-  factory HomeState.initial() => HomeState(
-        isCorrectGet: false,
-        clicks: 0,
-      );
+  factory HomeState.initial() => HomeState();
 
   HomeState copyWith({
-    bool? isCorrectGet,
-    int? clicks,
+    List<CampaignEvent>? featuredEvents,
+    List<CampaignNews>? featuredNews,
+    bool? isLoading,
+    String? error,
   }) =>
       HomeState(
-        isCorrectGet: isCorrectGet ?? this.isCorrectGet,
-        clicks: clicks ?? this.clicks,
+        featuredEvents: featuredEvents ?? this.featuredEvents,
+        featuredNews: featuredNews ?? this.featuredNews,
+        isLoading: isLoading ?? this.isLoading,
+        error: error ?? this.error,
       );
 }

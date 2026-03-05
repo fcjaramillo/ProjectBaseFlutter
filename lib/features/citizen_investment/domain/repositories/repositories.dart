@@ -1,7 +1,6 @@
 library;
 
+import '../../../../typing/entities/campaign/investment_project.dart';
 import '../../../../typing/result/result.dart';
-import '../../data/data_sources/data_sources.dart';
-import '../../data/repositories/repositories.dart';
 
-part 'ibase.dart';
+part 'icitizen_investment_repository.dart';

@@ -17,7 +17,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(homeViewModelProvider.notifier).getExample();
+      ref.read(homeViewModelProvider.notifier).loadHomeData();
     });
   }
 
@@ -34,9 +34,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         // About Section
         _buildAboutSection(context, responsive),
 
-        // Circles Gallery Section
-        _buildCirclesSection(context, responsive),
-
         // Strategic Axes Section
         _buildAxesSection(context, responsive),
 
@@ -45,6 +42,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
         // News Section
         _buildNewsSection(context, responsive),
+
+        // Territory Section
+        _buildTerritorySection(context, responsive),
+
+        // Citizen Investment Banner
+        _buildInvestmentBannerSection(context, responsive),
 
         // CTA Section
         _buildCtaSection(context, responsive),
@@ -166,18 +169,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       );
 
-  Widget _buildCirclesSection(
-    BuildContext context,
-    Responsive responsive,
-  ) => FadeImageScrollDelegate(
-    images: const <String>[
-      Jpgs.kCircle1,
-      Jpgs.kCircle2,
-      Jpgs.kCircle3,
-      Jpgs.kCircle4,
-    ],
-  );
-
   Widget _buildAxesSection(BuildContext context, Responsive responsive) {
     final int crossAxisCount = responsive.gridColumns(desktop: 4);
     final bool isMobile = responsive.width < Breakpoints.tablet;
@@ -251,7 +242,145 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  Widget _buildInvestmentBannerSection(
+    BuildContext context,
+    Responsive responsive,
+  ) {
+    final bool isMobile = responsive.width < Breakpoints.tablet;
+    final Color white = Theme.of(context).appColors.neutralNoChange.subtle;
+    final Color primary = Theme.of(context).appColors.primary.strong;
+    final Color warning = Theme.of(context).appColors.warning.strong;
+
+    final Widget content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Icon(Iconsax.chart_1, color: white, size: 28),
+            const SizedBox(width: 12),
+            BaseText.noChangeSubtle(
+              'TU POPAYÁN',
+              style: TypoSubtitles.s2.copyWith(
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        BaseText.noChangeSubtle(
+          '¿Cómo invertirías 830 mil millones de pesos en Popayán? '
+          'Tú decides las prioridades.',
+          style: isMobile ? TypoSecondary.b3r : TypoSecondary.b2r,
+        ),
+        const SizedBox(height: 16),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: 0.65,
+            backgroundColor: white.withValues(alpha: 0.2),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              white.withValues(alpha: 0.7),
+            ),
+            minHeight: 6,
+          ),
+        ),
+        const SizedBox(height: 6),
+        BaseText.noChangeSubtle(
+          '~65% del presupuesto municipal',
+          style: TypoSecondary.b4r.copyWith(
+            color: white.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: 24),
+        ElevatedButton.icon(
+          onPressed: () => context.go(Routes.citizenInvestment),
+          icon: Icon(Iconsax.calculator, color: primary),
+          label: Text(
+            'Calcular mi inversión',
+            style: TypoSecondary.b3r.copyWith(
+              color: primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: white,
+            foregroundColor: primary,
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 24 : 32,
+              vertical: 14,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: responsive.horizontalPadding(),
+        vertical: responsive.verticalPadding(),
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(isMobile ? 24 : 36),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: <Color>[
+                  primary,
+                  Theme.of(context).appColors.secondary.strong,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: isMobile
+                ? content
+                : Row(
+                    children: <Widget>[
+                      Expanded(child: content),
+                      const SizedBox(width: 32),
+                      Icon(
+                        Iconsax.money_recive,
+                        size: 72,
+                        color: white.withValues(alpha: 0.25),
+                      ),
+                    ],
+                  ),
+          ),
+          // Badge "NUEVO"
+          Positioned(
+            top: -12,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: warning,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(Iconsax.star, color: white, size: 14),
+                  const SizedBox(width: 4),
+                  BaseText.noChangeSubtle(
+                    'NUEVO',
+                    style: TypoSecondary.b4r.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildEventsSection(BuildContext context, Responsive responsive) {
+    final HomeState homeState = ref.watch(homeViewModelProvider);
     final int crossAxisCount = responsive.gridColumns();
     final bool isMobile = responsive.width < Breakpoints.tablet;
 
@@ -269,44 +398,46 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             onCtaPressed: () => context.go('/agenda'),
           ),
           SizedBox(height: responsive.spacing(mobile: 40, desktop: 60)),
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 24,
-            mainAxisSpacing: 24,
-            childAspectRatio: isMobile ? 1.2 : 1.0,
-            children: <Widget>[
-              EventCard(
-                title: 'Encuentro con lideres comunales',
-                date: DateTime.now().add(const Duration(days: 3)),
-                time: '10:00 AM',
-                location: 'Centro de Convenciones',
-                isFeatured: true,
-                onTap: () => context.go('/agenda/1'),
+          if (homeState.isLoading)
+            const Center(child: CircularProgressIndicator())
+          else if (homeState.featuredEvents.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 32),
+                child: BaseText(
+                  'Próximamente nuevos eventos.',
+                  style: TypoSecondary.b2r,
+                ),
               ),
-              EventCard(
-                title: 'Dialogo con jovenes emprendedores',
-                date: DateTime.now().add(const Duration(days: 7)),
-                time: '3:00 PM',
-                location: 'Universidad del Cauca',
-                onTap: () => context.go('/agenda/2'),
-              ),
-              EventCard(
-                title: 'Recorrido por barrios del sur',
-                date: DateTime.now().add(const Duration(days: 10)),
-                time: '8:00 AM',
-                location: 'Comuna 8',
-                onTap: () => context.go('/agenda/3'),
-              ),
-            ],
-          ),
+            )
+          else
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 24,
+              mainAxisSpacing: 24,
+              childAspectRatio: isMobile ? 1.2 : 1.0,
+              children: homeState.featuredEvents
+                  .map(
+                    (CampaignEvent event) => EventCard(
+                      title: event.title,
+                      date: event.eventDate,
+                      time: event.eventTime,
+                      location: event.location,
+                      isFeatured: event.isFeatured,
+                      onTap: () => context.go('/agenda/${event.id}'),
+                    ),
+                  )
+                  .toList(),
+            ),
         ],
       ),
     );
   }
 
   Widget _buildNewsSection(BuildContext context, Responsive responsive) {
+    final HomeState homeState = ref.watch(homeViewModelProvider);
     final int crossAxisCount = responsive.gridColumns();
     final bool isMobile = responsive.width < Breakpoints.tablet;
 
@@ -329,28 +460,166 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             subtitleColor: Theme.of(context).appColors.neutralNoChange.subtle,
           ),
           SizedBox(height: responsive.spacing(mobile: 40, desktop: 60)),
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 24,
-            mainAxisSpacing: 24,
-            childAspectRatio: isMobile ? 0.9 : 0.8,
-            children: <Widget>[
-              for (int i = 0; i < min(3, newsCampino.length); i++)
-                NewsCard(
-                  title: newsCampino[i].title,
-                  summary: newsCampino[i].description,
-                  date: DateTime.now().subtract(Duration(days: i * 2)),
-                  source: newsCampino[i].source,
-                  onTap: () => context.go('/noticias/${i + 1}'),
+          if (homeState.isLoading)
+            const Center(child: CircularProgressIndicator())
+          else if (homeState.featuredNews.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 32),
+                child: BaseText.noChangeSubtle(
+                  'Próximamente nuevas noticias.',
+                  style: TypoSecondary.b2r,
                 ),
+              ),
+            )
+          else
+            GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: crossAxisCount,
+              crossAxisSpacing: 24,
+              mainAxisSpacing: 24,
+              childAspectRatio: isMobile ? 0.9 : 0.8,
+              children: homeState.featuredNews
+                  .map(
+                    (CampaignNews news) => NewsCard(
+                      title: news.title,
+                      summary: news.summary,
+                      date: news.publishedDate,
+                      source: news.sourceName,
+                      category: news.category,
+                      imageUrl: news.imageUrl,
+                      isFeatured: news.isFeatured,
+                      onTap: () => context.go('/noticias/${news.id}'),
+                    ),
+                  )
+                  .toList(),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTerritorySection(BuildContext context, Responsive responsive) {
+    final bool isMobile = responsive.width < Breakpoints.tablet;
+
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: responsive.horizontalPadding(),
+        vertical: responsive.verticalPadding(),
+      ),
+      decoration: BoxDecoration(
+        color: Theme.of(context).appColors.tertiary.subtle,
+      ),
+      child: Column(
+        children: <Widget>[
+          SectionHeader(
+            title: 'Tu Ciudad por Comunas',
+            subtitle:
+                'Conoce las 9 comunas de Popayán y las propuestas '
+                'para cada territorio.',
+            ctaText: 'Explorar el mapa',
+            onCtaPressed: () => context.go(Routes.territory),
+          ),
+          SizedBox(height: responsive.spacing(mobile: 32, desktop: 48)),
+          Wrap(
+            spacing: 12,
+            runSpacing: 12,
+            alignment: WrapAlignment.center,
+            children: List<Widget>.generate(
+              9,
+              (int i) => _buildCommuneChip(context, i + 1),
+            ),
+          ),
+          SizedBox(height: responsive.spacing(mobile: 32, desktop: 48)),
+          Wrap(
+            spacing: responsive.spacing(mobile: 32, desktop: 60),
+            runSpacing: 24,
+            alignment: WrapAlignment.center,
+            children: <Widget>[
+              _buildTerritoryStats(context, '9', 'Comunas', responsive),
+              _buildTerritoryStats(context, '182', 'Barrios', responsive),
+              _buildTerritoryStats(context, '320K', 'Habitantes', responsive),
             ],
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton.icon(
+            onPressed: () => context.go(Routes.territory),
+            icon: const Icon(Iconsax.map_1),
+            label: Text(
+              'Ver mapa completo',
+              style: responsive
+                  .value<TextStyle>(
+                    mobile: TypoSecondary.b3r,
+                    desktop: TypoSecondary.b2r,
+                  )
+                  .copyWith(fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).appColors.primary.strong,
+              foregroundColor: Theme.of(
+                context,
+              ).appColors.neutralNoChange.subtle,
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 32 : 48,
+                vertical: isMobile ? 16 : 20,
+              ),
+            ),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildTerritoryStats(
+    BuildContext context,
+    String number,
+    String label,
+    Responsive responsive,
+  ) => Column(
+    children: <Widget>[
+      BaseText(
+        number,
+        style: responsive
+            .value<TextStyle>(mobile: TypoPrimary.h3, desktop: TypoPrimary.h2)
+            .copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).appColors.primary.strong,
+            ),
+      ),
+      const SizedBox(height: 8),
+      BaseText(
+        label.toUpperCase(),
+        style: responsive
+            .value<TextStyle>(
+              mobile: TypoSecondary.b4r,
+              desktop: TypoSecondary.b3r,
+            )
+            .copyWith(
+              letterSpacing: 1.5,
+              color: Theme.of(context).appColors.text.scale.soft,
+            ),
+      ),
+    ],
+  );
+
+  Widget _buildCommuneChip(BuildContext context, int number) => GestureDetector(
+    onTap: () => context.go(Routes.territory),
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Theme.of(context).appColors.primary.strong),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: BaseText(
+        'C$number',
+        style: TypoSecondary.b3r.copyWith(
+          fontWeight: FontWeight.bold,
+          color: Theme.of(context).appColors.primary.strong,
+        ),
+      ),
+    ),
+  );
 
   Widget _buildCtaSection(BuildContext context, Responsive responsive) {
     final bool isMobile = responsive.width < Breakpoints.tablet;

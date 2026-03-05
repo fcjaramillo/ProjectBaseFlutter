@@ -1,162 +1,138 @@
-import 'package:flutter/material.dart' hide Colors;
-import 'package:iconsax/iconsax.dart';
+library;
 
+import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../../typing/entities/campaign/life_milestone.dart';
 import '../../../../typing/extensions/extensions.dart';
+import '../../../../typing/result/result.dart';
 import '../../../../ui/ions/ions.dart';
 import '../../../../ui/utils/utils.dart';
 import '../../../../ui/widgets/atoms/atoms.dart';
+import '../../domain/dependencies/dependencies.dart';
 
-class LifeStoryScreen extends StatefulWidget {
+part 'life_story_screen.g.dart';
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+
+class _LifeStoryState {
+  const _LifeStoryState({
+    this.milestones = const <LifeMilestone>[],
+    this.selectedFilter = 'Todos',
+    this.isLoading = false,
+    this.error,
+  });
+
+  final List<LifeMilestone> milestones;
+  final String selectedFilter;
+  final bool isLoading;
+  final String? error;
+
+  List<LifeMilestone> get filteredMilestones {
+    if (selectedFilter == 'Todos') {
+      return milestones;
+    }
+    return milestones
+        .where(
+          (LifeMilestone m) =>
+              m.category?.name == selectedFilter.toLowerCase(),
+        )
+        .toList();
+  }
+
+  _LifeStoryState copyWith({
+    List<LifeMilestone>? milestones,
+    String? selectedFilter,
+    bool? isLoading,
+    String? error,
+  }) => _LifeStoryState(
+    milestones: milestones ?? this.milestones,
+    selectedFilter: selectedFilter ?? this.selectedFilter,
+    isLoading: isLoading ?? this.isLoading,
+    error: error,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ViewModel
+// ---------------------------------------------------------------------------
+
+@riverpod
+class _LifeStoryViewModel extends _$LifeStoryViewModel {
+  @override
+  _LifeStoryState build() => const _LifeStoryState();
+
+  Future<void> loadMilestones() async {
+    state = state.copyWith(isLoading: true);
+
+    final ResultDef<List<LifeMilestone>> result =
+        await ref.read(getLifeMilestonesUseCaseProvider).call();
+
+    result.when(
+      fail: (BackError error) {
+        state = state.copyWith(
+          isLoading: false,
+          error: error.description ?? 'Error al cargar hitos de vida',
+        );
+      },
+      success: (List<LifeMilestone> milestones) {
+        state = state.copyWith(
+          isLoading: false,
+          milestones: milestones,
+        );
+      },
+    );
+  }
+
+  void setFilter(String filter) {
+    state = state.copyWith(selectedFilter: filter);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen
+// ---------------------------------------------------------------------------
+
+class LifeStoryScreen extends ConsumerStatefulWidget {
   const LifeStoryScreen({super.key});
 
   @override
-  State<LifeStoryScreen> createState() => _LifeStoryScreenState();
+  ConsumerState<LifeStoryScreen> createState() => _LifeStoryScreenState();
 }
 
-class _LifeStoryScreenState extends State<LifeStoryScreen> {
-  String _selectedFilter = 'Todos';
-
-  final List<String> _filters = <String>[
+class _LifeStoryScreenState extends ConsumerState<LifeStoryScreen> {
+  static const List<String> _filters = <String>[
     'Todos',
     'Personal',
     'Profesional',
     'Academico',
+    'Politico',
   ];
 
-  final List<Map<String, dynamic>> _milestones = <Map<String, dynamic>>[
-    <String, dynamic>{
-      'year': '1975',
-      'title': 'Nacimiento en Popayan',
-      'description':
-          'Naci en la ciudad blanca de Colombia, Popayan, Cauca. '
-          'Desde pequeno, mi familia me inculco valores de servicio, '
-          'honestidad y amor por nuestra tierra.',
-      'category': 'Personal',
-      'image': null,
-    },
-    <String, dynamic>{
-      'year': '1993',
-      'title': 'Graduacion Bachiller',
-      'description':
-          'Me gradue del colegio con honores, destacandome en actividades '
-          'de liderazgo estudiantil y servicio comunitario.',
-      'category': 'Academico',
-      'image': null,
-    },
-    <String, dynamic>{
-      'year': '1995',
-      'title': 'Ingreso a la Policia Nacional',
-      'description':
-          'Decidi servir a mi pais ingresando a la Policia Nacional de Colombia, '
-          'comenzando una carrera de mas de dos decadas dedicada a la seguridad '
-          'y el bienestar de los ciudadanos.',
-      'category': 'Profesional',
-      'image': null,
-    },
-    <String, dynamic>{
-      'year': '1999',
-      'title': 'Especializacion en Comunicaciones',
-      'description':
-          'Obtuve mi especializacion en Comunicaciones Estrategicas, '
-          'desarrollando habilidades para conectar con las comunidades '
-          'y transmitir mensajes de paz y seguridad.',
-      'category': 'Academico',
-      'image': null,
-    },
-    <String, dynamic>{
-      'year': '2002',
-      'title': 'Matrimonio',
-      'description':
-          'Contraje matrimonio y forme mi familia, pilar fundamental '
-          'que me ha acompanado y apoyado en cada etapa de mi vida.',
-      'category': 'Personal',
-      'image': null,
-    },
-    <String, dynamic>{
-      'year': '2005',
-      'title': 'Jefe de Comunicaciones Regionales',
-      'description':
-          'Fui nombrado Jefe de Comunicaciones para la region del Cauca, '
-          'donde lidere equipos de trabajo y desarrolle estrategias '
-          'de comunicacion efectivas para la institucion.',
-      'category': 'Profesional',
-      'image': null,
-    },
-    <String, dynamic>{
-      'year': '2010',
-      'title': 'Primera Condecoracion Nacional',
-      'description':
-          'Recibi mi primera condecoracion a nivel nacional por servicios '
-          'distinguidos en operaciones de seguridad ciudadana.',
-      'category': 'Profesional',
-      'image': null,
-    },
-    <String, dynamic>{
-      'year': '2015',
-      'title': 'Maestria en Gestion Publica',
-      'description':
-          'Culmine mi maestria en Gestion Publica, preparandome para '
-          'contribuir de manera mas efectiva al desarrollo de mi comunidad.',
-      'category': 'Academico',
-      'image': null,
-    },
-    <String, dynamic>{
-      'year': '2018',
-      'title': 'Retiro Honroso de la Policia',
-      'description':
-          'Despues de mas de 24 años de servicio, me retire de la Policia Nacional '
-          'con multiples reconocimientos y la satisfaccion del deber cumplido.',
-      'category': 'Profesional',
-      'image': null,
-    },
-    <String, dynamic>{
-      'year': '2020',
-      'title': 'Trabajo Comunitario',
-      'description':
-          'Inicie un trabajo activo con comunidades vulnerables de Popayan, '
-          'escuchando sus necesidades y buscando soluciones concretas.',
-      'category': 'Personal',
-      'image': null,
-    },
-    <String, dynamic>{
-      'year': '2024',
-      'title': 'Candidatura a la Alcaldia',
-      'description':
-          'Con el respaldo de mi comunidad, decidi postularme como candidato '
-          'a la alcaldia de Popayan para servir a mi ciudad natal desde '
-          'esta nueva posicion.',
-      'category': 'Profesional',
-      'image': null,
-    },
-  ];
-
-  List<Map<String, dynamic>> get _filteredMilestones {
-    if (_selectedFilter == 'Todos') {
-      return _milestones;
-    }
-    return _milestones
-        .where((Map<String, dynamic> m) => m['category'] == _selectedFilter)
-        .toList();
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(_lifeStoryViewModelProvider.notifier).loadMilestones();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final _LifeStoryState state = ref.watch(_lifeStoryViewModelProvider);
     final Responsive responsive = Responsive.of(context);
     final bool isMobile = responsive.width < 768;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        // Hero Section
         _buildHeroSection(context, isMobile),
-
-        // Filter Section
-        _buildFilterSection(context, isMobile),
-
-        // Timeline Section
-        _buildTimelineSection(context, isMobile),
-
-        // Quote Section
+        _buildFilterSection(context, isMobile, state),
+        _buildTimelineSection(context, isMobile, state),
         _buildQuoteSection(context, isMobile),
       ],
     );
@@ -206,8 +182,15 @@ class _LifeStoryScreenState extends State<LifeStoryScreen> {
     ),
   );
 
-  Widget _buildFilterSection(BuildContext context, bool isMobile) => Container(
-    padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 80, vertical: 30),
+  Widget _buildFilterSection(
+    BuildContext context,
+    bool isMobile,
+    _LifeStoryState state,
+  ) => Container(
+    padding: EdgeInsets.symmetric(
+      horizontal: isMobile ? 20 : 80,
+      vertical: 30,
+    ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -220,23 +203,25 @@ class _LifeStoryScreenState extends State<LifeStoryScreen> {
           spacing: 12,
           runSpacing: 12,
           children: _filters.map((String filter) {
-            final bool isSelected = _selectedFilter == filter;
+            final bool isSelected = state.selectedFilter == filter;
             return FilterChip(
               label: Text(filter),
               selected: isSelected,
               onSelected: (bool selected) {
-                setState(() {
-                  _selectedFilter = filter;
-                });
+                ref
+                    .read(_lifeStoryViewModelProvider.notifier)
+                    .setFilter(filter);
               },
-              backgroundColor: Theme.of(context).appColors.neutral.subtle,
+              backgroundColor:
+                  Theme.of(context).appColors.neutral.subtle,
               selectedColor: Theme.of(context).appColors.primary.soft,
               checkmarkColor: Theme.of(context).appColors.primary.strong,
               labelStyle: TypoSecondary.b3r.copyWith(
                 color: isSelected
                     ? Theme.of(context).appColors.primary.strong
                     : null,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                fontWeight:
+                    isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               side: BorderSide(
                 color: isSelected
@@ -250,8 +235,32 @@ class _LifeStoryScreenState extends State<LifeStoryScreen> {
     ),
   );
 
-  Widget _buildTimelineSection(BuildContext context, bool isMobile) {
-    final List<Map<String, dynamic>> milestones = _filteredMilestones;
+  Widget _buildTimelineSection(
+    BuildContext context,
+    bool isMobile,
+    _LifeStoryState state,
+  ) {
+    if (state.isLoading) {
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 80),
+        child: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (state.error != null) {
+      return Container(
+        padding: const EdgeInsets.all(40),
+        child: Center(
+          child: BaseText(
+            state.error!,
+            style: TypoSecondary.b1r,
+            textAlign: TextAlign.center,
+          ),
+        ),
+      );
+    }
+
+    final List<LifeMilestone> milestones = state.filteredMilestones;
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -272,10 +281,10 @@ class _LifeStoryScreenState extends State<LifeStoryScreen> {
               children: <Widget>[
                 for (int i = 0; i < milestones.length; i++)
                   _TimelineMilestone(
-                    year: milestones[i]['year'] as String,
-                    title: milestones[i]['title'] as String,
-                    description: milestones[i]['description'] as String,
-                    category: milestones[i]['category'] as String,
+                    year: milestones[i].year.toString(),
+                    title: milestones[i].title,
+                    description: milestones[i].description ?? '',
+                    category: milestones[i].categoryName,
                     isFirst: i == 0,
                     isLast: i == milestones.length - 1,
                     isLeft: !isMobile && i.isEven,
@@ -309,7 +318,10 @@ class _LifeStoryScreenState extends State<LifeStoryScreen> {
               '"Mi vida ha sido un camino de servicio. Cada experiencia, '
               'cada reto, cada logro me ha preparado para este momento: '
               'servir a Popayan con todo mi corazon."',
-              style: (isMobile ? TypoSecondary.b1r : TypoPrimary.h4).copyWith(
+              style: (isMobile
+                      ? TypoSecondary.b1r
+                      : TypoPrimary.h4)
+                  .copyWith(
                 fontStyle: FontStyle.italic,
                 height: 1.6,
               ),
@@ -326,6 +338,10 @@ class _LifeStoryScreenState extends State<LifeStoryScreen> {
     ),
   );
 }
+
+// ---------------------------------------------------------------------------
+// Timeline Milestone Widget
+// ---------------------------------------------------------------------------
 
 class _TimelineMilestone extends StatelessWidget {
   const _TimelineMilestone({
@@ -385,105 +401,123 @@ class _TimelineMilestone extends StatelessWidget {
     return _buildDesktopLayout(context, categoryColor);
   }
 
-  Widget _buildMobileLayout(BuildContext context, Color categoryColor) =>
-      IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            // Timeline line
-            Column(
-              children: <Widget>[
-                Container(
-                  width: 16,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: categoryColor,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    _getCategoryIcon(),
-                    size: 8,
-                    color: Theme.of(context).appColors.neutralNoChange.subtle,
-                  ),
-                ),
-                if (!isLast)
-                  Expanded(
-                    child: Container(
-                      width: 2,
-                      color: Theme.of(context).appColors.neutral.soft,
-                    ),
-                  ),
-              ],
-            ),
-            const SizedBox(width: 16),
-            // Content
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 32),
-                child: _buildCard(context, categoryColor),
-              ),
-            ),
-          ],
+  Widget _buildMobileLayout(
+    BuildContext context,
+    Color categoryColor,
+  ) => Stack(
+    children: <Widget>[
+      if (!isLast)
+        Positioned(
+          left: 7,
+          top: 16,
+          bottom: 0,
+          child: Container(
+            width: 2,
+            color: Theme.of(context).appColors.neutral.soft,
+          ),
         ),
-      );
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Container(
+            width: 16,
+            height: 16,
+            decoration: BoxDecoration(
+              color: categoryColor,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              _getCategoryIcon(),
+              size: 8,
+              color:
+                  Theme.of(context).appColors.neutralNoChange.subtle,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 32),
+              child: _buildCard(context, categoryColor),
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
 
-  Widget _buildDesktopLayout(BuildContext context, Color categoryColor) =>
-      IntrinsicHeight(
-        child: Row(
-          children: <Widget>[
-            // Left content
-            Expanded(
-              child: isLeft
-                  ? Padding(
-                      padding: const EdgeInsets.only(bottom: 32),
-                      child: _buildCard(context, categoryColor),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-            // Timeline center
-            Column(
-              children: <Widget>[
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: categoryColor,
-                    shape: BoxShape.circle,
-                    boxShadow: <BoxShadow>[
-                      BoxShadow(
-                        color: categoryColor.withValues(alpha: 0.3),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    _getCategoryIcon(),
-                    size: 12,
-                    color: Theme.of(context).appColors.neutralNoChange.subtle,
-                  ),
-                ),
-                if (!isLast)
-                  Expanded(
-                    child: Container(
-                      width: 2,
-                      color: Theme.of(context).appColors.neutral.soft,
-                    ),
-                  ),
-              ],
-            ),
-            // Right content
-            Expanded(
-              child: !isLeft
-                  ? Padding(
-                      padding: const EdgeInsets.only(bottom: 32),
-                      child: _buildCard(context, categoryColor),
-                    )
-                  : const SizedBox.shrink(),
-            ),
-          ],
+  Widget _buildDesktopLayout(
+    BuildContext context,
+    Color categoryColor,
+  ) => Stack(
+    children: <Widget>[
+      if (!isLast)
+        Positioned(
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Container(
+                width: 3,
+                color: Theme.of(context).appColors.neutral.subtle,
+              ),
+            ],
+          ),
         ),
-      );
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Expanded(
+            child: isLeft
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 32),
+                    child: _buildCard(context, categoryColor),
+                  )
+                : const SizedBox.shrink(),
+          ),
+          // Timeline center
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: categoryColor,
+                  shape: BoxShape.circle,
+                  boxShadow: <BoxShadow>[
+                    BoxShadow(
+                      color: categoryColor.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  _getCategoryIcon(),
+                  size: 12,
+                  color: Theme.of(
+                    context,
+                  ).appColors.neutralNoChange.subtle,
+                ),
+              ),
+            ],
+          ),
+          Expanded(
+            child: !isLeft
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 32),
+                    child: _buildCard(context, categoryColor),
+                  )
+                : const SizedBox.shrink(),
+          ),
+        ],
+      ),
+    ],
+  );
 
   Widget _buildCard(BuildContext context, Color categoryColor) => Container(
     margin: EdgeInsets.only(
@@ -494,7 +528,9 @@ class _TimelineMilestone extends StatelessWidget {
     decoration: BoxDecoration(
       color: Theme.of(context).appColors.neutral.subtle,
       borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: Theme.of(context).appColors.neutral.soft),
+      border: Border.all(
+        color: Theme.of(context).appColors.neutral.soft,
+      ),
       boxShadow: <BoxShadow>[
         BoxShadow(
           color: Theme.of(context).appColors.opacity.base,
@@ -506,23 +542,30 @@ class _TimelineMilestone extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        // Year badge
         Row(
           children: <Widget>[
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
               decoration: BoxDecoration(
                 color: categoryColor,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: BaseText.noChangeSubtle(
                 year,
-                style: TypoSecondary.b3r.copyWith(fontWeight: FontWeight.bold),
+                style: TypoSecondary.b3r.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(width: 12),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
               decoration: BoxDecoration(
                 color: categoryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
@@ -538,13 +581,11 @@ class _TimelineMilestone extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 16),
-        // Title
         BaseText(
           title,
           style: TypoSubtitles.s1.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
-        // Description
         BaseText(
           description,
           style: TypoSecondary.b2r.copyWith(

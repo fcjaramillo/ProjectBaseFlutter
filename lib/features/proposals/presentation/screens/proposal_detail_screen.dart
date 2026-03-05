@@ -1,83 +1,218 @@
+library;
+
 import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../typing/entities/campaign/proposal.dart';
 import '../../../../typing/extensions/extensions.dart';
+import '../../../../typing/result/result.dart';
 import '../../../../ui/ions/ions.dart';
 import '../../../../ui/routes/routes.dart';
 import '../../../../ui/utils/utils.dart';
 import '../../../../ui/widgets/atoms/atoms.dart';
+import '../../domain/dependencies/dependencies.dart';
 
-class ProposalDetailScreen extends StatelessWidget {
+part 'proposal_detail_screen.g.dart';
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+
+class ProposalDetailState {
+  ProposalDetailState({
+    required this.isLoading,
+    this.proposal,
+    this.error,
+  });
+
+  final bool isLoading;
+  final Proposal? proposal;
+  final String? error;
+
+  factory ProposalDetailState.initial() => ProposalDetailState(
+        isLoading: false,
+      );
+
+  ProposalDetailState copyWith({
+    bool? isLoading,
+    Proposal? proposal,
+    String? error,
+    bool clearError = false,
+  }) =>
+      ProposalDetailState(
+        isLoading: isLoading ?? this.isLoading,
+        proposal: proposal ?? this.proposal,
+        error: clearError ? null : error ?? this.error,
+      );
+}
+
+// ---------------------------------------------------------------------------
+// ViewModel
+// ---------------------------------------------------------------------------
+
+@riverpod
+class ProposalDetailViewModel extends _$ProposalDetailViewModel {
+  @override
+  ProposalDetailState build() => ProposalDetailState.initial();
+
+  Future<void> loadProposal(String id) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    final ResultDef<Proposal?> result =
+        await ref.read(getProposalByIdUseCaseProvider).call(id);
+
+    result.when(
+      fail: (BackError error) {
+        state = state.copyWith(
+          isLoading: false,
+          error: error.description ?? 'Error al cargar la propuesta',
+        );
+      },
+      success: (Proposal? proposal) {
+        state = state.copyWith(isLoading: false, proposal: proposal);
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen
+// ---------------------------------------------------------------------------
+
+class ProposalDetailScreen extends ConsumerStatefulWidget {
   const ProposalDetailScreen({required this.proposalId, super.key});
 
   final String proposalId;
 
   @override
+  ConsumerState<ProposalDetailScreen> createState() =>
+      _ProposalDetailScreenState();
+}
+
+class _ProposalDetailScreenState
+    extends ConsumerState<ProposalDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(proposalDetailViewModelProvider.notifier)
+          .loadProposal(widget.proposalId);
+    });
+  }
+
+  Color _getCategoryColor(BuildContext context, String? category) {
+    switch (category) {
+      case 'Seguridad':
+        return Theme.of(context).appColors.error.strong;
+      case 'Economia':
+        return Theme.of(context).appColors.success.strong;
+      case 'Educacion':
+        return Theme.of(context).appColors.informative.strong;
+      case 'Salud':
+        return Theme.of(context).appColors.error.strong;
+      case 'Movilidad':
+        return Theme.of(context).appColors.warning.strong;
+      case 'Cultura':
+        return Theme.of(context).appColors.primary.strong;
+      default:
+        return Theme.of(context).appColors.primary.strong;
+    }
+  }
+
+  IconData _getCategoryIcon(String? category) {
+    switch (category) {
+      case 'Seguridad':
+        return Iconsax.shield_tick;
+      case 'Economia':
+        return Iconsax.chart;
+      case 'Educacion':
+        return Iconsax.teacher;
+      case 'Salud':
+        return Iconsax.hospital;
+      case 'Movilidad':
+        return Iconsax.car;
+      case 'Cultura':
+        return Iconsax.music;
+      default:
+        return Iconsax.star;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final ProposalDetailState detailState =
+        ref.watch(proposalDetailViewModelProvider);
     final Responsive responsive = Responsive.of(context);
     final bool isMobile = responsive.width < 768;
 
-    // Mock data - in production this would come from Supabase
-    final Map<String, dynamic> proposal = _getProposalById(proposalId);
+    if (detailState.isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(80),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (detailState.error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40),
+          child: BaseText(
+            detailState.error!,
+            style: TypoSecondary.b2r,
+          ),
+        ),
+      );
+    }
+
+    if (detailState.proposal == null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40),
+          child: BaseText(
+            'Propuesta no encontrada.',
+            style: TypoSecondary.b2r,
+          ),
+        ),
+      );
+    }
+
+    final Proposal proposal = detailState.proposal!;
+    final Color headerColor =
+        _getCategoryColor(context, proposal.category);
 
     return SingleChildScrollView(
       child: Column(
         children: <Widget>[
-          _buildHeader(context, isMobile, proposal),
+          _buildHeader(context, isMobile, proposal, headerColor),
           _buildContent(context, isMobile, proposal),
-          _buildRelatedProposals(context, isMobile),
+          _buildRelatedProposals(context, isMobile, proposal.category),
           _buildCtaSection(context, isMobile),
         ],
       ),
     );
   }
 
-  Map<String, dynamic> _getProposalById(String id) {
-    // Mock data
-    return <String, dynamic>{
-      'id': id,
-      'title': 'Fortalecimiento de la seguridad ciudadana',
-      'category': 'Seguridad',
-      'icon': Iconsax.shield_tick,
-      'description':
-          'Implementar un sistema integral de seguridad con camaras de '
-              'vigilancia, patrullaje constante y coordinacion con la Policia '
-              'Nacional para reducir los indices de criminalidad.',
-      'objectives': <String>[
-        'Reducir los indices de criminalidad en un 30%',
-        'Instalar 500 camaras de vigilancia en zonas criticas',
-        'Crear 15 nuevos CAI con tecnologia moderna',
-        'Implementar patrullaje inteligente 24/7',
-        'Fortalecer los frentes de seguridad barriales',
-      ],
-      'actions': <String>[
-        'Diagnostico de zonas de alto riesgo',
-        'Alianzas con la Policia Nacional',
-        'Capacitacion a lideres comunitarios',
-        'Sistema de alertas tempranas',
-        'Iluminacion de espacios publicos',
-      ],
-      'timeline': '2025-2027',
-      'budget': '45 mil millones COP',
-      'beneficiaries': '320,000 habitantes',
-    };
-  }
-
   Widget _buildHeader(
-      BuildContext context, bool isMobile, Map<String, dynamic> proposal) {
+    BuildContext context,
+    bool isMobile,
+    Proposal proposal,
+    Color headerColor,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 20 : 80,
         vertical: isMobile ? 40 : 60,
       ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).appColors.error.strong,
-      ),
+      decoration: BoxDecoration(color: headerColor),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // Breadcrumb
           Row(
             children: <Widget>[
               GestureDetector(
@@ -89,8 +224,9 @@ class ProposalDetailScreen extends StatelessWidget {
               ),
               BaseText.noChangeSubtle(' / ', style: TypoSecondary.b3r),
               BaseText.noChangeSubtle(
-                proposal['category'] as String,
-                style: TypoSecondary.b3r.copyWith(fontWeight: FontWeight.bold),
+                proposal.category ?? '',
+                style: TypoSecondary.b3r
+                    .copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -108,16 +244,18 @@ class ProposalDetailScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Icon(
-                  proposal['icon'] as IconData,
+                  _getCategoryIcon(proposal.category),
                   size: 32,
-                  color: Theme.of(context).appColors.neutralNoChange.subtle,
+                  color:
+                      Theme.of(context).appColors.neutralNoChange.subtle,
                 ),
               ),
               const SizedBox(width: 20),
               Expanded(
                 child: BaseText.noChangeSubtle(
-                  proposal['title'] as String,
-                  style: (isMobile ? TypoPrimary.h3 : TypoPrimary.h2).copyWith(
+                  proposal.title,
+                  style:
+                      (isMobile ? TypoPrimary.h3 : TypoPrimary.h2).copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -130,7 +268,10 @@ class ProposalDetailScreen extends StatelessWidget {
   }
 
   Widget _buildContent(
-      BuildContext context, bool isMobile, Map<String, dynamic> proposal) {
+    BuildContext context,
+    bool isMobile,
+    Proposal proposal,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 20 : 80,
@@ -159,8 +300,7 @@ class ProposalDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildMainContent(
-      BuildContext context, Map<String, dynamic> proposal) {
+  Widget _buildMainContent(BuildContext context, Proposal proposal) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -170,74 +310,40 @@ class ProposalDetailScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         BaseText(
-          proposal['description'] as String,
+          proposal.description ?? 'Sin descripcion disponible.',
           style: TypoSecondary.b1r.copyWith(height: 1.8),
         ),
-        const SizedBox(height: 32),
-        BaseText(
-          'Objetivos',
-          style: TypoPrimary.h4.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        ...(proposal['objectives'] as List<String>).map(
-          (String objective) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Icon(
-                  Iconsax.tick_circle,
-                  size: 20,
-                  color: Theme.of(context).appColors.success.strong,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: BaseText(objective, style: TypoSecondary.b2r),
-                ),
-              ],
+        if (proposal.category != null) ...<Widget>[
+          const SizedBox(height: 32),
+          BaseText(
+            'Categoria',
+            style: TypoPrimary.h4.copyWith(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            decoration: BoxDecoration(
+              color: _getCategoryColor(context, proposal.category)
+                  .withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: BaseText(
+              proposal.category!,
+              style: TypoSecondary.b2r.copyWith(
+                color: _getCategoryColor(context, proposal.category),
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 32),
-        BaseText(
-          'Acciones a implementar',
-          style: TypoPrimary.h4.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        ...(proposal['actions'] as List<String>).asMap().entries.map(
-          (MapEntry<int, String> entry) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).appColors.primary.soft,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: Center(
-                    child: BaseText.primary(
-                      '${entry.key + 1}',
-                      style: TypoSecondary.b3r
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: BaseText(entry.value, style: TypoSecondary.b2r),
-                ),
-              ],
-            ),
-          ),
-        ),
+        ],
       ],
     );
   }
 
-  Widget _buildSidebar(BuildContext context, Map<String, dynamic> proposal) {
+  Widget _buildSidebar(BuildContext context, Proposal proposal) {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
@@ -254,23 +360,16 @@ class ProposalDetailScreen extends StatelessWidget {
           const SizedBox(height: 24),
           _buildInfoItem(
             context,
-            Iconsax.calendar,
-            'Plazo de ejecucion',
-            proposal['timeline'] as String,
+            Iconsax.category,
+            'Categoria',
+            proposal.category ?? 'Sin categoria',
           ),
           const SizedBox(height: 16),
           _buildInfoItem(
             context,
-            Iconsax.wallet_2,
-            'Presupuesto estimado',
-            proposal['budget'] as String,
-          ),
-          const SizedBox(height: 16),
-          _buildInfoItem(
-            context,
-            Iconsax.people,
-            'Beneficiarios',
-            proposal['beneficiaries'] as String,
+            Iconsax.document_text,
+            'ID de propuesta',
+            proposal.id,
           ),
           const SizedBox(height: 24),
           SizedBox(
@@ -280,7 +379,8 @@ class ProposalDetailScreen extends StatelessWidget {
               icon: const Icon(Iconsax.document_download, size: 18),
               label: const Text('Descargar PDF'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).appColors.primary.strong,
+                backgroundColor:
+                    Theme.of(context).appColors.primary.strong,
                 foregroundColor:
                     Theme.of(context).appColors.neutralNoChange.subtle,
                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -318,7 +418,8 @@ class ProposalDetailScreen extends StatelessWidget {
               ),
               BaseText(
                 value,
-                style: TypoSecondary.b2r.copyWith(fontWeight: FontWeight.bold),
+                style: TypoSecondary.b2r
+                    .copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -327,7 +428,11 @@ class ProposalDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildRelatedProposals(BuildContext context, bool isMobile) {
+  Widget _buildRelatedProposals(
+    BuildContext context,
+    bool isMobile,
+    String? category,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 20 : 80,
@@ -344,7 +449,9 @@ class ProposalDetailScreen extends StatelessWidget {
           ),
           const SizedBox(height: 24),
           BaseText(
-            'Explora otras propuestas de seguridad ciudadana.',
+            category != null
+                ? 'Explora otras propuestas de $category.'
+                : 'Explora otras propuestas del plan de gobierno.',
             style: TypoSecondary.b2r.copyWith(
               color: Theme.of(context).appColors.text.scale.soft,
             ),
@@ -391,7 +498,8 @@ class ProposalDetailScreen extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor:
                   Theme.of(context).appColors.neutralNoChange.subtle,
-              foregroundColor: Theme.of(context).appColors.primary.strong,
+              foregroundColor:
+                  Theme.of(context).appColors.primary.strong,
             ),
           ),
         ],

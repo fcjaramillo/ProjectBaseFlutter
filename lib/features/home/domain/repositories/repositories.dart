@@ -1,7 +1,7 @@
 library;
 
+import '../../../../typing/entities/campaign/campaign_event.dart';
+import '../../../../typing/entities/campaign/campaign_news.dart';
 import '../../../../typing/result/result.dart';
-import '../../data/data_sources/data_sources.dart';
-import '../../data/repositories/repositories.dart';
 
 part 'ibase.dart';

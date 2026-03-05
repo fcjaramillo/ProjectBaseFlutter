@@ -1,16 +1,41 @@
 part of 'organisms.dart';
 
-class AppShell extends ConsumerWidget {
+class AppShell extends ConsumerStatefulWidget {
   const AppShell({required this.child, super.key});
 
   final Widget child;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
+
+class _AppShellState extends ConsumerState<AppShell> {
+  String? _previousPath;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final String currentPath = GoRouterState.of(context).uri.path;
+    if (_previousPath != null && _previousPath != currentPath) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final ScrollController controller = ref.read(
+          appScrollControllerProvider,
+        );
+        if (controller.hasClients) {
+          controller.jumpTo(0);
+        }
+      });
+    }
+    _previousPath = currentPath;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final Responsive responsive = Responsive.of(context);
     final bool isMobile = responsive.width < Breakpoints.tablet;
-    final ScrollController scrollController =
-        ref.watch(appScrollControllerProvider);
+    final ScrollController scrollController = ref.watch(
+      appScrollControllerProvider,
+    );
 
     return Scaffold(
       drawer: isMobile ? const _MobileDrawer() : null,
@@ -23,7 +48,7 @@ class AppShell extends ConsumerWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
-                  child,
+                  widget.child,
                   const SizedBox(height: 20),
                   const CampaignFooter(),
                 ],
@@ -344,9 +369,18 @@ class _MobileDrawer extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                _SocialIconButton(icon: Iconsax.instagram, onPressed: () {}),
-                _SocialIconButton(icon: Icons.facebook, onPressed: () {}),
-                _SocialIconButton(icon: Iconsax.music, onPressed: () {}),
+                _SocialIconButton(
+                  network: SocialNetwork.facebook,
+                  onPressed: () => launchSocialUrl(SocialLinks.facebook),
+                ),
+                _SocialIconButton(
+                  network: SocialNetwork.instagram,
+                  onPressed: () => launchSocialUrl(SocialLinks.instagram),
+                ),
+                _SocialIconButton(
+                  network: SocialNetwork.twitter,
+                  onPressed: () => launchSocialUrl(SocialLinks.twitter),
+                ),
               ],
             ),
           ),
@@ -398,16 +432,21 @@ class _MobileNavItem extends StatelessWidget {
 }
 
 class _SocialIconButton extends StatelessWidget {
-  const _SocialIconButton({required this.icon, required this.onPressed});
+  const _SocialIconButton({
+    required this.network,
+    required this.onPressed,
+  });
 
-  final IconData icon;
+  final SocialNetwork network;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) => IconButton(
-    icon: Icon(icon),
+    icon: socialIcon(
+      network: network,
+      color: Theme.of(context).appColors.primary.strong,
+    ),
     onPressed: onPressed,
-    color: Theme.of(context).appColors.primary.strong,
   );
 }
 
@@ -505,7 +544,7 @@ class _DesktopFooter extends StatelessWidget {
                 const SizedBox(height: 16),
                 _FooterContactItem(
                   icon: Iconsax.sms,
-                  text: 'contacto@williamcampiño.com',
+                  text: 'contacto@gmail.com',
                 ),
                 _FooterContactItem(
                   icon: Iconsax.call,
@@ -531,14 +570,24 @@ class _DesktopFooter extends StatelessWidget {
                 Row(
                   children: <Widget>[
                     _FooterSocialIcon(
-                      icon: Iconsax.instagram,
-                      onPressed: () {},
+                      network: SocialNetwork.facebook,
+                      onPressed: () =>
+                          launchSocialUrl(SocialLinks.facebook),
                     ),
-                    _FooterSocialIcon(icon: Icons.facebook, onPressed: () {}),
-                    _FooterSocialIcon(icon: Iconsax.music, onPressed: () {}),
                     _FooterSocialIcon(
-                      icon: Icons.youtube_searched_for,
-                      onPressed: () {},
+                      network: SocialNetwork.instagram,
+                      onPressed: () =>
+                          launchSocialUrl(SocialLinks.instagram),
+                    ),
+                    _FooterSocialIcon(
+                      network: SocialNetwork.twitter,
+                      onPressed: () =>
+                          launchSocialUrl(SocialLinks.twitter),
+                    ),
+                    _FooterSocialIcon(
+                      network: SocialNetwork.youtube,
+                      onPressed: () =>
+                          launchSocialUrl(SocialLinks.youtube),
                     ),
                   ],
                 ),
@@ -601,9 +650,18 @@ class _MobileFooter extends StatelessWidget {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          _FooterSocialIcon(icon: Iconsax.instagram, onPressed: () {}),
-          _FooterSocialIcon(icon: Icons.facebook, onPressed: () {}),
-          _FooterSocialIcon(icon: Iconsax.music, onPressed: () {}),
+          _FooterSocialIcon(
+            network: SocialNetwork.facebook,
+            onPressed: () => launchSocialUrl(SocialLinks.facebook),
+          ),
+          _FooterSocialIcon(
+            network: SocialNetwork.instagram,
+            onPressed: () => launchSocialUrl(SocialLinks.instagram),
+          ),
+          _FooterSocialIcon(
+            network: SocialNetwork.twitter,
+            onPressed: () => launchSocialUrl(SocialLinks.twitter),
+          ),
         ],
       ),
       const SizedBox(height: 24),
@@ -705,16 +763,21 @@ class _FooterContactItem extends StatelessWidget {
 }
 
 class _FooterSocialIcon extends StatelessWidget {
-  const _FooterSocialIcon({required this.icon, required this.onPressed});
+  const _FooterSocialIcon({
+    required this.network,
+    required this.onPressed,
+  });
 
-  final IconData icon;
+  final SocialNetwork network;
   final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) => IconButton(
-    icon: Icon(icon),
+    icon: socialIcon(
+      network: network,
+      color: Theme.of(context).appColors.neutralNoChange.subtle,
+    ),
     onPressed: onPressed,
-    color: Theme.of(context).appColors.neutralNoChange.subtle,
     iconSize: 24,
   );
 }

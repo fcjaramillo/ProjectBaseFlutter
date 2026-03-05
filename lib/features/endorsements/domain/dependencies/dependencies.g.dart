@@ -9,91 +9,101 @@ part of 'dependencies.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(baseapiUnRepository)
-const baseapiUnRepositoryProvider = BaseapiUnRepositoryProvider._();
+@ProviderFor(getEndorsementsUseCase)
+const getEndorsementsUseCaseProvider = GetEndorsementsUseCaseProvider._();
 
-final class BaseapiUnRepositoryProvider
-    extends $FunctionalProvider<BaseRepository, BaseRepository, BaseRepository>
-    with $Provider<BaseRepository> {
-  const BaseapiUnRepositoryProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'baseapiUnRepositoryProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$baseapiUnRepositoryHash();
-
-  @$internal
-  @override
-  $ProviderElement<BaseRepository> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  BaseRepository create(Ref ref) {
-    return baseapiUnRepository(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(BaseRepository value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<BaseRepository>(value),
-    );
-  }
-}
-
-String _$baseapiUnRepositoryHash() =>
-    r'ad4d0f7a8a4e4d8d9b16770c4f330c56afde464f';
-
-@ProviderFor(getExampleUseCase)
-const getExampleUseCaseProvider = GetExampleUseCaseProvider._();
-
-final class GetExampleUseCaseProvider
+final class GetEndorsementsUseCaseProvider
     extends
         $FunctionalProvider<
-          GetExampleUseCase,
-          GetExampleUseCase,
-          GetExampleUseCase
+          GetEndorsementsUseCase,
+          GetEndorsementsUseCase,
+          GetEndorsementsUseCase
         >
-    with $Provider<GetExampleUseCase> {
-  const GetExampleUseCaseProvider._()
+    with $Provider<GetEndorsementsUseCase> {
+  const GetEndorsementsUseCaseProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'getExampleUseCaseProvider',
+        name: r'getEndorsementsUseCaseProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$getExampleUseCaseHash();
+  String debugGetCreateSourceHash() => _$getEndorsementsUseCaseHash();
 
   @$internal
   @override
-  $ProviderElement<GetExampleUseCase> $createElement(
+  $ProviderElement<GetEndorsementsUseCase> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  GetExampleUseCase create(Ref ref) {
-    return getExampleUseCase(ref);
+  GetEndorsementsUseCase create(Ref ref) {
+    return getEndorsementsUseCase(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GetExampleUseCase value) {
+  Override overrideWithValue(GetEndorsementsUseCase value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<GetExampleUseCase>(value),
+      providerOverride: $SyncValueProvider<GetEndorsementsUseCase>(value),
     );
   }
 }
 
-String _$getExampleUseCaseHash() => r'e3ea44a47e9a67bf3e577c6a12d708b8c53b325c';
+String _$getEndorsementsUseCaseHash() =>
+    r'3ec5ebd734cee3392e80188995e9dd4b0ac36f8c';
+
+@ProviderFor(getFeaturedEndorsementsUseCase)
+const getFeaturedEndorsementsUseCaseProvider =
+    GetFeaturedEndorsementsUseCaseProvider._();
+
+final class GetFeaturedEndorsementsUseCaseProvider
+    extends
+        $FunctionalProvider<
+          GetFeaturedEndorsementsUseCase,
+          GetFeaturedEndorsementsUseCase,
+          GetFeaturedEndorsementsUseCase
+        >
+    with $Provider<GetFeaturedEndorsementsUseCase> {
+  const GetFeaturedEndorsementsUseCaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'getFeaturedEndorsementsUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$getFeaturedEndorsementsUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<GetFeaturedEndorsementsUseCase> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  GetFeaturedEndorsementsUseCase create(Ref ref) {
+    return getFeaturedEndorsementsUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GetFeaturedEndorsementsUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GetFeaturedEndorsementsUseCase>(
+        value,
+      ),
+    );
+  }
+}
+
+String _$getFeaturedEndorsementsUseCaseHash() =>
+    r'0203480bc6ddc17d2f719d0def53dbf6c5e8c652';

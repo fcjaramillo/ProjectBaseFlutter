@@ -1,25 +1,175 @@
+library;
+
 import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../typing/entities/campaign/campaign_event.dart';
 import '../../../../typing/extensions/extensions.dart';
+import '../../../../typing/result/result.dart';
 import '../../../../ui/ions/ions.dart';
 import '../../../../ui/routes/routes.dart';
 import '../../../../ui/utils/utils.dart';
 import '../../../../ui/widgets/atoms/atoms.dart';
+import '../../domain/dependencies/dependencies.dart';
 
-class EventDetailScreen extends StatelessWidget {
+part 'event_detail_screen.g.dart';
+
+// --- State ---
+class EventDetailState {
+  EventDetailState({
+    required this.isLoading,
+    this.event,
+    this.error,
+  });
+
+  final CampaignEvent? event;
+  final bool isLoading;
+  final String? error;
+
+  factory EventDetailState.initial() =>
+      EventDetailState(isLoading: false);
+
+  EventDetailState copyWith({
+    CampaignEvent? event,
+    bool? isLoading,
+    String? error,
+    bool clearError = false,
+  }) =>
+      EventDetailState(
+        event: event ?? this.event,
+        isLoading: isLoading ?? this.isLoading,
+        error: clearError ? null : error ?? this.error,
+      );
+}
+
+// --- ViewModel ---
+@riverpod
+class EventDetailViewModel extends _$EventDetailViewModel {
+  @override
+  EventDetailState build() => EventDetailState.initial();
+
+  Future<void> loadEvent(String eventId) async {
+    state = state.copyWith(isLoading: true, clearError: true);
+    final ResultDef<CampaignEvent?> result =
+        await ref.read(getEventByIdUseCaseProvider).call(eventId);
+    result.when(
+      fail: (BackError error) {
+        state = state.copyWith(
+          isLoading: false,
+          error: error.description ?? 'Error al cargar el evento',
+        );
+      },
+      success: (CampaignEvent? event) {
+        state = state.copyWith(isLoading: false, event: event);
+      },
+    );
+  }
+}
+
+// --- Screen ---
+class EventDetailScreen extends ConsumerStatefulWidget {
   const EventDetailScreen({required this.eventId, super.key});
 
   final String eventId;
 
   @override
+  ConsumerState<EventDetailScreen> createState() =>
+      _EventDetailScreenState();
+}
+
+class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(eventDetailViewModelProvider.notifier)
+          .loadEvent(widget.eventId);
+    });
+  }
+
+  String _formatDate(DateTime date) {
+    final List<String> months = <String>[
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre',
+      'Diciembre',
+    ];
+    final List<String> weekdays = <String>[
+      'Lunes', 'Martes', 'Miercoles', 'Jueves',
+      'Viernes', 'Sabado', 'Domingo',
+    ];
+    return '${weekdays[date.weekday - 1]}, ${date.day} de '
+        '${months[date.month - 1]} de ${date.year}';
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final EventDetailState detailState =
+        ref.watch(eventDetailViewModelProvider);
     final Responsive responsive = Responsive.of(context);
     final bool isMobile = responsive.width < 768;
 
-    // Mock data - in production this would come from Supabase
-    final Map<String, dynamic> event = _getEventById(eventId);
+    if (detailState.isLoading) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(80),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (detailState.error != null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              BaseText(
+                detailState.error!,
+                style: TypoSecondary.b1r,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              OutlinedButton.icon(
+                onPressed: () => context.go(Routes.events),
+                icon: const Icon(Iconsax.arrow_left),
+                label: const Text('Ver todos los eventos'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (detailState.event == null) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(40),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              BaseText(
+                'Evento no encontrado.',
+                style: TypoSecondary.b1r,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              OutlinedButton.icon(
+                onPressed: () => context.go(Routes.events),
+                icon: const Icon(Iconsax.arrow_left),
+                label: const Text('Ver todos los eventos'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final CampaignEvent event = detailState.event!;
 
     return SingleChildScrollView(
       child: Column(
@@ -33,44 +183,11 @@ class EventDetailScreen extends StatelessWidget {
     );
   }
 
-  Map<String, dynamic> _getEventById(String id) {
-    return <String, dynamic>{
-      'id': id,
-      'title': 'Encuentro con lideres comunales',
-      'description':
-          'Reunion con presidentes de juntas de accion comunal de todas '
-              'las comunas para escuchar propuestas, dialogar sobre las '
-              'necesidades de los barrios y construir juntos soluciones.',
-      'date': DateTime.now().add(const Duration(days: 3)),
-      'time': '10:00 AM - 12:00 PM',
-      'location': 'Centro de Convenciones',
-      'address': 'Calle 5 #6-30, Centro Historico',
-      'agenda': <String>[
-        'Bienvenida y presentacion del candidato',
-        'Diagnostico de necesidades por comuna',
-        'Mesas de trabajo tematicas',
-        'Plenaria y conclusiones',
-        'Compromisos y cierre',
-      ],
-      'isFeatured': true,
-    };
-  }
-
-  String _formatDate(DateTime date) {
-    final List<String> months = <String>[
-      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
-    ];
-    final List<String> weekdays = <String>[
-      'Lunes', 'Martes', 'Miercoles', 'Jueves',
-      'Viernes', 'Sabado', 'Domingo',
-    ];
-    return '${weekdays[date.weekday - 1]}, ${date.day} de '
-        '${months[date.month - 1]} de ${date.year}';
-  }
-
   Widget _buildHeader(
-      BuildContext context, bool isMobile, Map<String, dynamic> event) {
+    BuildContext context,
+    bool isMobile,
+    CampaignEvent event,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 20 : 80,
@@ -89,7 +206,6 @@ class EventDetailScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          // Breadcrumb
           Row(
             children: <Widget>[
               GestureDetector(
@@ -102,15 +218,20 @@ class EventDetailScreen extends StatelessWidget {
               BaseText.noChangeSubtle(' / ', style: TypoSecondary.b3r),
               BaseText.noChangeSubtle(
                 'Evento',
-                style: TypoSecondary.b3r.copyWith(fontWeight: FontWeight.bold),
+                style: TypoSecondary.b3r.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 24),
-          if (event['isFeatured'] as bool)
+          if (event.isFeatured)
             Container(
               margin: const EdgeInsets.only(bottom: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
               decoration: BoxDecoration(
                 color: Theme.of(context).appColors.warning.strong,
                 borderRadius: BorderRadius.circular(20),
@@ -121,7 +242,8 @@ class EventDetailScreen extends StatelessWidget {
                   Icon(
                     Iconsax.star,
                     size: 14,
-                    color: Theme.of(context).appColors.neutralNoChange.subtle,
+                    color:
+                        Theme.of(context).appColors.neutralNoChange.subtle,
                   ),
                   const SizedBox(width: 4),
                   BaseText.noChangeSubtle(
@@ -134,7 +256,7 @@ class EventDetailScreen extends StatelessWidget {
               ),
             ),
           BaseText.noChangeSubtle(
-            event['title'] as String,
+            event.title,
             style: (isMobile ? TypoPrimary.h3 : TypoPrimary.h2).copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -147,18 +269,20 @@ class EventDetailScreen extends StatelessWidget {
               _buildInfoChip(
                 context,
                 Iconsax.calendar,
-                _formatDate(event['date'] as DateTime),
+                _formatDate(event.eventDate),
               ),
-              _buildInfoChip(
-                context,
-                Iconsax.clock,
-                event['time'] as String,
-              ),
-              _buildInfoChip(
-                context,
-                Iconsax.location,
-                event['location'] as String,
-              ),
+              if (event.eventTime != null)
+                _buildInfoChip(
+                  context,
+                  Iconsax.clock,
+                  event.eventTime!,
+                ),
+              if (event.location != null)
+                _buildInfoChip(
+                  context,
+                  Iconsax.location,
+                  event.location!,
+                ),
             ],
           ),
         ],
@@ -166,7 +290,11 @@ class EventDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoChip(BuildContext context, IconData icon, String text) {
+  Widget _buildInfoChip(
+    BuildContext context,
+    IconData icon,
+    String text,
+  ) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -182,7 +310,10 @@ class EventDetailScreen extends StatelessWidget {
   }
 
   Widget _buildContent(
-      BuildContext context, bool isMobile, Map<String, dynamic> event) {
+    BuildContext context,
+    bool isMobile,
+    CampaignEvent event,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 20 : 80,
@@ -194,8 +325,6 @@ class EventDetailScreen extends StatelessWidget {
               children: <Widget>[
                 _buildDescription(context, event),
                 const SizedBox(height: 40),
-                _buildAgenda(context, event),
-                const SizedBox(height: 40),
                 _buildRegisterCard(context),
               ],
             )
@@ -204,14 +333,7 @@ class EventDetailScreen extends StatelessWidget {
               children: <Widget>[
                 Expanded(
                   flex: 2,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      _buildDescription(context, event),
-                      const SizedBox(height: 40),
-                      _buildAgenda(context, event),
-                    ],
-                  ),
+                  child: _buildDescription(context, event),
                 ),
                 const SizedBox(width: 40),
                 Expanded(child: _buildRegisterCard(context)),
@@ -220,7 +342,7 @@ class EventDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDescription(BuildContext context, Map<String, dynamic> event) {
+  Widget _buildDescription(BuildContext context, CampaignEvent event) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -230,54 +352,29 @@ class EventDetailScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         BaseText(
-          event['description'] as String,
+          event.description ?? 'Sin descripcion disponible.',
           style: TypoSecondary.b1r.copyWith(height: 1.8),
         ),
-      ],
-    );
-  }
-
-  Widget _buildAgenda(BuildContext context, Map<String, dynamic> event) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        BaseText(
-          'Agenda del evento',
-          style: TypoPrimary.h4.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        ...(event['agenda'] as List<String>).asMap().entries.map(
-          (MapEntry<int, String> entry) => Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).appColors.primary.soft,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: BaseText.primary(
-                      '${entry.key + 1}',
-                      style: TypoSecondary.b3r
-                          .copyWith(fontWeight: FontWeight.bold),
-                    ),
-                  ),
+        if (event.hasLivestream) ...<Widget>[
+          const SizedBox(height: 24),
+          Row(
+            children: <Widget>[
+              Icon(
+                Iconsax.video,
+                size: 20,
+                color: Theme.of(context).appColors.primary.strong,
+              ),
+              const SizedBox(width: 8),
+              BaseText(
+                'Transmision en vivo disponible',
+                style: TypoSecondary.b2r.copyWith(
+                  color: Theme.of(context).appColors.primary.strong,
+                  fontWeight: FontWeight.bold,
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 6),
-                    child: BaseText(entry.value, style: TypoSecondary.b2r),
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ),
+        ],
       ],
     );
   }
@@ -322,7 +419,8 @@ class EventDetailScreen extends StatelessWidget {
               icon: const Icon(Iconsax.tick_circle),
               label: const Text('Confirmar asistencia'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Theme.of(context).appColors.primary.strong,
+                backgroundColor:
+                    Theme.of(context).appColors.primary.strong,
                 foregroundColor:
                     Theme.of(context).appColors.neutralNoChange.subtle,
                 padding: const EdgeInsets.symmetric(vertical: 14),
@@ -337,7 +435,8 @@ class EventDetailScreen extends StatelessWidget {
               icon: const Icon(Iconsax.calendar_add),
               label: const Text('Agregar al calendario'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: Theme.of(context).appColors.primary.strong,
+                foregroundColor:
+                    Theme.of(context).appColors.primary.strong,
                 side: BorderSide(
                   color: Theme.of(context).appColors.primary.strong,
                 ),
@@ -351,7 +450,10 @@ class EventDetailScreen extends StatelessWidget {
   }
 
   Widget _buildLocationSection(
-      BuildContext context, bool isMobile, Map<String, dynamic> event) {
+    BuildContext context,
+    bool isMobile,
+    CampaignEvent event,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 20 : 80,
@@ -384,16 +486,21 @@ class EventDetailScreen extends StatelessWidget {
                     color: Theme.of(context).appColors.neutral.strong,
                   ),
                   const SizedBox(height: 16),
-                  BaseText(
-                    event['location'] as String,
-                    style: TypoSubtitles.s2.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  BaseText(
-                    event['address'] as String,
-                    style: TypoSecondary.b3r.copyWith(
-                      color: Theme.of(context).appColors.text.scale.soft,
+                  if (event.location != null)
+                    BaseText(
+                      event.location!,
+                      style: TypoSubtitles.s2.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
+                  if (event.address != null)
+                    BaseText(
+                      event.address!,
+                      style: TypoSecondary.b3r.copyWith(
+                        color:
+                            Theme.of(context).appColors.text.scale.soft,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -423,7 +530,8 @@ class EventDetailScreen extends StatelessWidget {
             icon: const Icon(Iconsax.share),
             label: const Text('Compartir evento'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).appColors.primary.strong,
+              backgroundColor:
+                  Theme.of(context).appColors.primary.strong,
               foregroundColor:
                   Theme.of(context).appColors.neutralNoChange.subtle,
             ),

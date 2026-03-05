@@ -1,18 +1,124 @@
+library;
+
 import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../../../typing/entities/campaign/strategic_axis.dart';
 import '../../../../typing/extensions/extensions.dart';
+import '../../../../typing/result/result.dart';
 import '../../../../ui/ions/ions.dart';
 import '../../../../ui/routes/routes.dart';
 import '../../../../ui/utils/utils.dart';
 import '../../../../ui/widgets/atoms/atoms.dart';
+import '../../domain/dependencies/dependencies.dart';
 
-class StrategicAxesScreen extends StatelessWidget {
+part 'strategic_axes_screen.g.dart';
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+
+class StrategicAxesState {
+  StrategicAxesState({
+    required this.axes,
+    required this.isLoading,
+    this.error,
+  });
+
+  final List<StrategicAxis> axes;
+  final bool isLoading;
+  final String? error;
+
+  factory StrategicAxesState.initial() => StrategicAxesState(
+        axes: <StrategicAxis>[],
+        isLoading: false,
+      );
+
+  StrategicAxesState copyWith({
+    List<StrategicAxis>? axes,
+    bool? isLoading,
+    String? error,
+    bool clearError = false,
+  }) =>
+      StrategicAxesState(
+        axes: axes ?? this.axes,
+        isLoading: isLoading ?? this.isLoading,
+        error: clearError ? null : error ?? this.error,
+      );
+}
+
+// ---------------------------------------------------------------------------
+// ViewModel
+// ---------------------------------------------------------------------------
+
+@riverpod
+class StrategicAxesViewModel extends _$StrategicAxesViewModel {
+  @override
+  StrategicAxesState build() => StrategicAxesState.initial();
+
+  Future<void> loadAxes() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    final ResultDef<List<StrategicAxis>> result =
+        await ref.read(getStrategicAxesUseCaseProvider).call();
+
+    result.when(
+      fail: (BackError error) {
+        state = state.copyWith(
+          isLoading: false,
+          error: error.description ?? 'Error al cargar los ejes estrategicos',
+        );
+      },
+      success: (List<StrategicAxis> axes) {
+        state = state.copyWith(isLoading: false, axes: axes);
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen
+// ---------------------------------------------------------------------------
+
+class StrategicAxesScreen extends ConsumerStatefulWidget {
   const StrategicAxesScreen({super.key});
 
   @override
+  ConsumerState<StrategicAxesScreen> createState() =>
+      _StrategicAxesScreenState();
+}
+
+class _StrategicAxesScreenState extends ConsumerState<StrategicAxesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(strategicAxesViewModelProvider.notifier).loadAxes();
+    });
+  }
+
+  IconData _getAxisIcon(String? iconName) {
+    switch (iconName) {
+      case 'shield_tick':
+        return Iconsax.shield_tick;
+      case 'chart':
+        return Iconsax.chart;
+      case 'teacher':
+        return Iconsax.teacher;
+      case 'car':
+        return Iconsax.car;
+      default:
+        return Iconsax.star;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final StrategicAxesState axesState =
+        ref.watch(strategicAxesViewModelProvider);
     final Responsive responsive = Responsive.of(context);
     final bool isMobile = responsive.width < 768;
 
@@ -21,7 +127,7 @@ class StrategicAxesScreen extends StatelessWidget {
       children: <Widget>[
         _buildHeroSection(context, isMobile),
         _buildIntroSection(context, isMobile),
-        _buildAxesSection(context, isMobile),
+        _buildAxesSection(context, isMobile, axesState),
         _buildCtaSection(context, isMobile),
       ],
     );
@@ -92,133 +198,51 @@ class StrategicAxesScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAxesSection(BuildContext context, bool isMobile) {
-    final List<Map<String, dynamic>> axes = <Map<String, dynamic>>[
-      <String, dynamic>{
-        'icon': Iconsax.shield_tick,
-        'title': 'Seguridad Ciudadana',
-        'subtitle': 'Popayan seguro para todos',
-        'color': Theme.of(context).appColors.error.strong,
-        'description':
-            'Implementaremos estrategias integrales de seguridad que '
-                'combinen tecnologia, presencia policial y participacion '
-                'ciudadana para recuperar la tranquilidad de nuestros barrios.',
-        'highlights': <String>[
-          'Red de camaras de vigilancia en zonas criticas',
-          '15 nuevos CAI con tecnologia moderna',
-          'Programas de prevencion del delito juvenil',
-          'Iluminacion de espacios publicos',
-          'Frentes de seguridad barriales',
-        ],
-      },
-      <String, dynamic>{
-        'icon': Iconsax.chart,
-        'title': 'Desarrollo Economico',
-        'subtitle': 'Empleo y oportunidades',
-        'color': Theme.of(context).appColors.success.strong,
-        'description':
-            'Impulsaremos la economia local apoyando a emprendedores, '
-                'atrayendo inversion y generando condiciones para que las '
-                'empresas crezcan y generen empleo de calidad.',
-        'highlights': <String>[
-          'Fondo de capital semilla para emprendedores',
-          'Mercados campesinos permanentes',
-          'Incentivos tributarios para nuevas empresas',
-          'Formacion tecnica y tecnologica',
-          'Turismo como motor economico',
-        ],
-      },
-      <String, dynamic>{
-        'icon': Iconsax.teacher,
-        'title': 'Educacion de Calidad',
-        'subtitle': 'Futuro para nuestros jovenes',
-        'color': Theme.of(context).appColors.informative.strong,
-        'description':
-            'La educacion es la herramienta mas poderosa para transformar '
-                'vidas. Garantizaremos acceso a educacion de calidad desde '
-                'la primera infancia hasta la educacion superior.',
-        'highlights': <String>[
-          'Mejoramiento de infraestructura escolar',
-          'Dotacion tecnologica para colegios publicos',
-          'Programa de alimentacion escolar universal',
-          'Becas universitarias municipales',
-          'Escuelas de formacion artistica y deportiva',
-        ],
-      },
-      <String, dynamic>{
-        'icon': Iconsax.hospital,
-        'title': 'Salud para Todos',
-        'subtitle': 'Bienestar integral',
-        'color': const Color(0xFFE91E63),
-        'description':
-            'Un sistema de salud cercano, eficiente y humanizado que '
-                'llegue a todos los rincones de la ciudad con servicios '
-                'de calidad y calidez.',
-        'highlights': <String>[
-          'Centros de salud en cada comuna',
-          'Brigadas de salud preventiva',
-          'Atencion especializada para adultos mayores',
-          'Programas de salud mental',
-          'Telemedicina para zonas rurales',
-        ],
-      },
-      <String, dynamic>{
-        'icon': Iconsax.car,
-        'title': 'Movilidad Sostenible',
-        'subtitle': 'Ciudad conectada',
-        'color': Theme.of(context).appColors.warning.strong,
-        'description':
-            'Una ciudad con vias de calidad, transporte publico eficiente '
-                'y alternativas de movilidad sostenible que faciliten el '
-                'desplazamiento de todos los ciudadanos.',
-        'highlights': <String>[
-          'Pavimentacion de vias barriales',
-          'Red de ciclorutas seguras',
-          'Mejoramiento del transporte publico',
-          'Zonas peatonales en el centro historico',
-          'Senalizacion y semaforizacion inteligente',
-        ],
-      },
-      <String, dynamic>{
-        'icon': Iconsax.music,
-        'title': 'Cultura y Tradicion',
-        'subtitle': 'Identidad payanesa',
-        'color': Theme.of(context).appColors.primary.strong,
-        'description':
-            'Popayan es cuna de tradicion y cultura. Fortaleceremos nuestra '
-                'identidad cultural, apoyaremos a los artistas locales y '
-                'preservaremos nuestro patrimonio.',
-        'highlights': <String>[
-          'Apoyo a artistas y gestores culturales',
-          'Restauracion del patrimonio arquitectonico',
-          'Bibliotecas y centros culturales barriales',
-          'Festivales y eventos culturales',
-          'Escuelas de musica y artes tradicionales',
-        ],
-      },
-    ];
-
+  Widget _buildAxesSection(
+    BuildContext context,
+    bool isMobile,
+    StrategicAxesState axesState,
+  ) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 20 : 80,
         vertical: isMobile ? 40 : 60,
       ),
-      child: Column(
-        children: axes.asMap().entries.map((MapEntry<int, Map<String, dynamic>> entry) {
-          final int index = entry.key;
-          final Map<String, dynamic> axis = entry.value;
-          return _AxisDetailCard(
-            icon: axis['icon'] as IconData,
-            title: axis['title'] as String,
-            subtitle: axis['subtitle'] as String,
-            description: axis['description'] as String,
-            highlights: axis['highlights'] as List<String>,
-            color: axis['color'] as Color,
-            isReversed: !isMobile && index.isOdd,
-            isMobile: isMobile,
-          );
-        }).toList(),
-      ),
+      child: axesState.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : axesState.error != null
+              ? Center(
+                  child: BaseText(
+                    axesState.error!,
+                    style: TypoSecondary.b2r,
+                  ),
+                )
+              : axesState.axes.isEmpty
+                  ? Center(
+                      child: BaseText(
+                        'No hay ejes estrategicos disponibles.',
+                        style: TypoSecondary.b2r,
+                      ),
+                    )
+                  : Column(
+                      children: axesState.axes
+                          .asMap()
+                          .entries
+                          .map(
+                            (MapEntry<int, StrategicAxis> entry) =>
+                                _AxisDetailCard(
+                              icon: _getAxisIcon(entry.value.icon),
+                              title: entry.value.title,
+                              subtitle: entry.value.description ?? '',
+                              description: entry.value.description ?? '',
+                              color: entry.value.color ??
+                                  Theme.of(context).appColors.primary.strong,
+                              isReversed: !isMobile && entry.key.isOdd,
+                              isMobile: isMobile,
+                            ),
+                          )
+                          .toList(),
+                    ),
     );
   }
 
@@ -255,7 +279,8 @@ class StrategicAxesScreen extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor:
                   Theme.of(context).appColors.neutralNoChange.subtle,
-              foregroundColor: Theme.of(context).appColors.secondary.strong,
+              foregroundColor:
+                  Theme.of(context).appColors.secondary.strong,
               padding: EdgeInsets.symmetric(
                 horizontal: isMobile ? 32 : 48,
                 vertical: isMobile ? 16 : 20,
@@ -268,13 +293,16 @@ class StrategicAxesScreen extends StatelessWidget {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Private widget
+// ---------------------------------------------------------------------------
+
 class _AxisDetailCard extends StatelessWidget {
   const _AxisDetailCard({
     required this.icon,
     required this.title,
     required this.subtitle,
     required this.description,
-    required this.highlights,
     required this.color,
     required this.isReversed,
     required this.isMobile,
@@ -284,7 +312,6 @@ class _AxisDetailCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String description;
-  final List<String> highlights;
   final Color color;
   final bool isReversed;
   final bool isMobile;
@@ -346,34 +373,6 @@ class _AxisDetailCard extends StatelessWidget {
             BaseText(
               description,
               style: TypoSecondary.b1r.copyWith(height: 1.6),
-            ),
-            const SizedBox(height: 24),
-            BaseText(
-              'Acciones principales:',
-              style: TypoSubtitles.s2.copyWith(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 16),
-            ...highlights.map(
-              (String highlight) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Icon(
-                      Iconsax.tick_circle,
-                      size: 20,
-                      color: color,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: BaseText(
-                        highlight,
-                        style: TypoSecondary.b2r,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
             ),
           ],
         ),

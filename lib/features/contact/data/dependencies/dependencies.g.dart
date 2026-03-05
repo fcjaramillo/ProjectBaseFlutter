@@ -9,85 +9,49 @@ part of 'dependencies.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(baseapiUn)
-const baseapiUnProvider = BaseapiUnProvider._();
+@ProviderFor(contactRepository)
+const contactRepositoryProvider = ContactRepositoryProvider._();
 
-final class BaseapiUnProvider
-    extends $FunctionalProvider<ApiUtils, ApiUtils, ApiUtils>
-    with $Provider<ApiUtils> {
-  const BaseapiUnProvider._()
+final class ContactRepositoryProvider
+    extends
+        $FunctionalProvider<
+          ContactRepository,
+          ContactRepository,
+          ContactRepository
+        >
+    with $Provider<ContactRepository> {
+  const ContactRepositoryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'baseapiUnProvider',
+        name: r'contactRepositoryProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$baseapiUnHash();
+  String debugGetCreateSourceHash() => _$contactRepositoryHash();
 
   @$internal
   @override
-  $ProviderElement<ApiUtils> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
+  $ProviderElement<ContactRepository> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
 
   @override
-  ApiUtils create(Ref ref) {
-    return baseapiUn(ref);
+  ContactRepository create(Ref ref) {
+    return contactRepository(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ApiUtils value) {
+  Override overrideWithValue(ContactRepository value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ApiUtils>(value),
+      providerOverride: $SyncValueProvider<ContactRepository>(value),
     );
   }
 }
 
-String _$baseapiUnHash() => r'0207538a30ad98a56a20452fe30dda65e12420e5';
-
-@ProviderFor(baseapiUnDataSource)
-const baseapiUnDataSourceProvider = BaseapiUnDataSourceProvider._();
-
-final class BaseapiUnDataSourceProvider
-    extends $FunctionalProvider<BaseDataSource, BaseDataSource, BaseDataSource>
-    with $Provider<BaseDataSource> {
-  const BaseapiUnDataSourceProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'baseapiUnDataSourceProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$baseapiUnDataSourceHash();
-
-  @$internal
-  @override
-  $ProviderElement<BaseDataSource> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  BaseDataSource create(Ref ref) {
-    return baseapiUnDataSource(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(BaseDataSource value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<BaseDataSource>(value),
-    );
-  }
-}
-
-String _$baseapiUnDataSourceHash() =>
-    r'6dab0e921dcf6278914c7abb65705c33fbfcb746';
+String _$contactRepositoryHash() => r'9d089cbbd7315ad6c5d23b97c3c89e7f156c9a4d';

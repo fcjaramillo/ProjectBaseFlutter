@@ -1,26 +1,112 @@
-import 'package:flutter/material.dart' hide Colors;
-import 'package:iconsax/iconsax.dart';
+library;
 
+import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../../typing/entities/campaign/city_vision.dart';
 import '../../../../typing/extensions/extensions.dart';
+import '../../../../typing/result/result.dart';
 import '../../../../ui/ions/ions.dart';
 import '../../../../ui/utils/utils.dart';
 import '../../../../ui/widgets/atoms/atoms.dart';
 import '../../../../ui/widgets/organisms/organisms.dart';
+import '../../domain/dependencies/dependencies.dart';
 
-class VisionScreen extends StatelessWidget {
+part 'vision_screen.g.dart';
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+
+class _VisionState {
+  const _VisionState({
+    this.vision,
+    this.isLoading = false,
+    this.error,
+  });
+
+  final CityVision? vision;
+  final bool isLoading;
+  final String? error;
+
+  _VisionState copyWith({
+    CityVision? vision,
+    bool? isLoading,
+    String? error,
+  }) => _VisionState(
+    vision: vision ?? this.vision,
+    isLoading: isLoading ?? this.isLoading,
+    error: error,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// ViewModel
+// ---------------------------------------------------------------------------
+
+@riverpod
+class _VisionViewModel extends _$VisionViewModel {
+  @override
+  _VisionState build() => const _VisionState();
+
+  Future<void> loadVision() async {
+    state = state.copyWith(isLoading: true);
+
+    final ResultDef<CityVision?> result =
+        await ref.read(getCityVisionUseCaseProvider).call();
+
+    result.when(
+      fail: (BackError error) {
+        state = state.copyWith(
+          isLoading: false,
+          error: error.description ?? 'Error al cargar vision',
+        );
+      },
+      success: (CityVision? vision) {
+        state = state.copyWith(
+          isLoading: false,
+          vision: vision,
+        );
+      },
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen
+// ---------------------------------------------------------------------------
+
+class VisionScreen extends ConsumerStatefulWidget {
   const VisionScreen({super.key});
 
   @override
+  ConsumerState<VisionScreen> createState() => _VisionScreenState();
+}
+
+class _VisionScreenState extends ConsumerState<VisionScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(_visionViewModelProvider.notifier).loadVision();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final _VisionState state = ref.watch(_visionViewModelProvider);
     final Responsive responsive = Responsive.of(context);
     final bool isMobile = responsive.width < 768;
-    final bool isTablet = responsive.width >= 768 && responsive.width < 1200;
+    final bool isTablet =
+        responsive.width >= 768 && responsive.width < 1200;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         _buildHeroSection(context, isMobile),
-        _buildMainVisionSection(context, isMobile),
+        _buildMainVisionSection(context, isMobile, state),
         _buildPrinciplesSection(context, isMobile, isTablet),
         _buildFutureSection(context, isMobile),
         _buildQuoteSection(context, isMobile),
@@ -36,14 +122,18 @@ class VisionScreen extends StatelessWidget {
         image: AssetImage(Pngs.kHome3),
         fit: BoxFit.cover,
         colorFilter: ColorFilter.mode(
-          Theme.of(context).appColors.secondary.strong.withValues(alpha: 0.8),
+          Theme.of(
+            context,
+          ).appColors.secondary.strong.withValues(alpha: 0.8),
           BlendMode.multiply,
         ),
       ),
     ),
     child: Center(
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 80),
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 20 : 80,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -64,7 +154,7 @@ class VisionScreen extends StatelessWidget {
               constraints: const BoxConstraints(maxWidth: 700),
               child: BaseText.noChangeSubtle(
                 'Una ciudad moderna, humana y sostenible donde cada '
-                'payanés pueda vivir con dignidad y esperanza.',
+                'payanes pueda vivir con dignidad y esperanza.',
                 style: isMobile ? TypoSecondary.b2r : TypoSecondary.b1r,
                 textAlign: TextAlign.center,
               ),
@@ -78,6 +168,7 @@ class VisionScreen extends StatelessWidget {
   Widget _buildMainVisionSection(
     BuildContext context,
     bool isMobile,
+    _VisionState state,
   ) => Container(
     padding: EdgeInsets.symmetric(
       horizontal: isMobile ? 20 : 80,
@@ -101,23 +192,48 @@ class VisionScreen extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              BaseText(
-                'Queremos transformar a Popayan en una ciudad que sea '
-                'referente de desarrollo sostenible en Colombia. Una ciudad '
-                'donde la seguridad, la educacion, el empleo y la calidad de '
-                'vida sean una realidad para todos sus habitantes.',
-                style: TypoSecondary.b1r.copyWith(height: 1.8),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              BaseText(
-                'Imaginamos un Popayan que conserva su rica herencia cultural '
-                'y arquitectonica, mientras abraza la innovacion y el progreso. '
-                'Una ciudad que cuida a sus ciudadanos, protege su medio ambiente '
-                'y genera oportunidades para las nuevas generaciones.',
-                style: TypoSecondary.b1r.copyWith(height: 1.8),
-                textAlign: TextAlign.center,
-              ),
+              if (state.isLoading)
+                const CircularProgressIndicator()
+              else if (state.vision != null) ...<Widget>[
+                BaseText(
+                  state.vision!.mainMessage,
+                  style: TypoSecondary.b1r.copyWith(height: 1.8),
+                  textAlign: TextAlign.center,
+                ),
+                if (state.vision!.principles != null &&
+                    state.vision!.principles!.isNotEmpty) ...<Widget>[
+                  const SizedBox(height: 24),
+                  ...state.vision!.principles!.map(
+                    (String principle) => Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: BaseText(
+                        principle,
+                        style: TypoSecondary.b1r.copyWith(height: 1.8),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
+                ],
+              ] else ...<Widget>[
+                BaseText(
+                  'Queremos transformar a Popayan en una ciudad que sea '
+                  'referente de desarrollo sostenible en Colombia. Una ciudad '
+                  'donde la seguridad, la educacion, el empleo y la calidad '
+                  'de vida sean una realidad para todos sus habitantes.',
+                  style: TypoSecondary.b1r.copyWith(height: 1.8),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                BaseText(
+                  'Imaginamos un Popayan que conserva su rica herencia '
+                  'cultural y arquitectonica, mientras abraza la innovacion '
+                  'y el progreso. Una ciudad que cuida a sus ciudadanos, '
+                  'protege su medio ambiente y genera oportunidades para '
+                  'las nuevas generaciones.',
+                  style: TypoSecondary.b1r.copyWith(height: 1.8),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ],
           ),
         ),
@@ -189,7 +305,8 @@ class VisionScreen extends StatelessWidget {
         children: <Widget>[
           const SectionHeader(
             title: 'Principios de Desarrollo',
-            subtitle: 'Los pilares que guian nuestra vision de ciudad.',
+            subtitle:
+                'Los pilares que guian nuestra vision de ciudad.',
           ),
           SizedBox(height: isMobile ? 40 : 60),
           GridView.builder(
@@ -245,7 +362,7 @@ class VisionScreen extends StatelessWidget {
         children: <Widget>[
           const SectionHeader(
             title: 'Metas de Gobierno',
-            subtitle: 'Compromisos medibles para los proximos 4 años.',
+            subtitle: 'Compromisos medibles para los proximos 4 anos.',
           ),
           SizedBox(height: isMobile ? 40 : 60),
           ConstrainedBox(
@@ -291,8 +408,12 @@ class VisionScreen extends StatelessWidget {
             BaseText.noChangeSubtle(
               '"El Popayan que sonamos no es una utopia, es una meta '
               'alcanzable si trabajamos unidos. Cada calle pavimentada, '
-              'cada nino educado, cada familia segura nos acerca a ese sueno."',
-              style: (isMobile ? TypoSecondary.b1r : TypoPrimary.h4).copyWith(
+              'cada nino educado, cada familia segura nos acerca a ese '
+              'sueno."',
+              style: (isMobile
+                      ? TypoSecondary.b1r
+                      : TypoPrimary.h4)
+                  .copyWith(
                 fontStyle: FontStyle.italic,
                 height: 1.6,
               ),
@@ -309,6 +430,10 @@ class VisionScreen extends StatelessWidget {
     ),
   );
 }
+
+// ---------------------------------------------------------------------------
+// Private Widgets
+// ---------------------------------------------------------------------------
 
 class _PrincipleCard extends StatelessWidget {
   const _PrincipleCard({

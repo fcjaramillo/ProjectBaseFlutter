@@ -1,21 +1,119 @@
-import 'package:flutter/material.dart' hide Colors;
-import 'package:iconsax/iconsax.dart';
+library;
 
+import 'package:flutter/material.dart' hide Colors;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../../../../typing/entities/campaign/proposal.dart';
 import '../../../../typing/extensions/extensions.dart';
+import '../../../../typing/result/result.dart';
 import '../../../../ui/ions/ions.dart';
+import '../../../../ui/routes/routes.dart';
 import '../../../../ui/utils/utils.dart';
 import '../../../../ui/widgets/atoms/atoms.dart';
+import '../../domain/dependencies/dependencies.dart';
 
-class ProposalsScreen extends StatefulWidget {
+part 'proposals_screen.g.dart';
+
+// ---------------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------------
+
+class ProposalsState {
+  ProposalsState({
+    required this.proposals,
+    required this.isLoading,
+    this.selectedCategory,
+    this.error,
+  });
+
+  final List<Proposal> proposals;
+  final bool isLoading;
+  final String? selectedCategory;
+  final String? error;
+
+  factory ProposalsState.initial() => ProposalsState(
+        proposals: <Proposal>[],
+        isLoading: false,
+      );
+
+  List<Proposal> get filteredProposals {
+    if (selectedCategory == null || selectedCategory == 'Todos') {
+      return proposals;
+    }
+    return proposals
+        .where((Proposal p) => p.category == selectedCategory)
+        .toList();
+  }
+
+  ProposalsState copyWith({
+    List<Proposal>? proposals,
+    bool? isLoading,
+    String? selectedCategory,
+    String? error,
+    bool clearError = false,
+    bool clearSelectedCategory = false,
+  }) =>
+      ProposalsState(
+        proposals: proposals ?? this.proposals,
+        isLoading: isLoading ?? this.isLoading,
+        selectedCategory: clearSelectedCategory
+            ? null
+            : selectedCategory ?? this.selectedCategory,
+        error: clearError ? null : error ?? this.error,
+      );
+}
+
+// ---------------------------------------------------------------------------
+// ViewModel
+// ---------------------------------------------------------------------------
+
+@riverpod
+class ProposalsViewModel extends _$ProposalsViewModel {
+  @override
+  ProposalsState build() => ProposalsState.initial();
+
+  Future<void> loadProposals() async {
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    final ResultDef<List<Proposal>> result =
+        await ref.read(getProposalsUseCaseProvider).call();
+
+    result.when(
+      fail: (BackError error) {
+        state = state.copyWith(
+          isLoading: false,
+          error: error.description ?? 'Error al cargar las propuestas',
+        );
+      },
+      success: (List<Proposal> proposals) {
+        state = state.copyWith(isLoading: false, proposals: proposals);
+      },
+    );
+  }
+
+  void setFilter(String? category) {
+    state = state.copyWith(
+      selectedCategory: category,
+      clearSelectedCategory: category == null,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Screen
+// ---------------------------------------------------------------------------
+
+class ProposalsScreen extends ConsumerStatefulWidget {
   const ProposalsScreen({super.key});
 
   @override
-  State<ProposalsScreen> createState() => _ProposalsScreenState();
+  ConsumerState<ProposalsScreen> createState() => _ProposalsScreenState();
 }
 
-class _ProposalsScreenState extends State<ProposalsScreen> {
-  String _selectedCategory = 'Todos';
-
+class _ProposalsScreenState extends ConsumerState<ProposalsScreen> {
   final List<String> _categories = <String>[
     'Todos',
     'Seguridad',
@@ -26,134 +124,73 @@ class _ProposalsScreenState extends State<ProposalsScreen> {
     'Cultura',
   ];
 
-  final List<Map<String, dynamic>> _proposals = <Map<String, dynamic>>[
-    <String, dynamic>{
-      'title': 'Fortalecimiento de la seguridad ciudadana',
-      'description':
-          'Implementar un sistema integral de seguridad con camaras de vigilancia, '
-              'patrullaje constante y coordinacion con la Policia Nacional para '
-              'reducir los indices de criminalidad en todos los barrios.',
-      'category': 'Seguridad',
-      'icon': Iconsax.shield_tick,
-    },
-    <String, dynamic>{
-      'title': 'Red de CAI inteligentes',
-      'description':
-          'Construir 15 nuevos Comandos de Atencion Inmediata equipados con '
-              'tecnologia de punta para una respuesta rapida ante emergencias.',
-      'category': 'Seguridad',
-      'icon': Iconsax.building,
-    },
-    <String, dynamic>{
-      'title': 'Apoyo al emprendimiento local',
-      'description':
-          'Crear un fondo de capital semilla y asesoria empresarial para '
-              'emprendedores payaneses, con enfasis en jovenes y mujeres cabeza de hogar.',
-      'category': 'Economia',
-      'icon': Iconsax.chart,
-    },
-    <String, dynamic>{
-      'title': 'Mercados campesinos permanentes',
-      'description':
-          'Establecer espacios permanentes para que los campesinos del Cauca '
-              'vendan sus productos directamente a los consumidores, eliminando intermediarios.',
-      'category': 'Economia',
-      'icon': Iconsax.shop,
-    },
-    <String, dynamic>{
-      'title': 'Educacion de calidad para todos',
-      'description':
-          'Mejorar la infraestructura educativa, dotar de tecnologia a las escuelas '
-              'publicas y garantizar programas de alimentacion escolar.',
-      'category': 'Educacion',
-      'icon': Iconsax.teacher,
-    },
-    <String, dynamic>{
-      'title': 'Becas universitarias municipales',
-      'description':
-          'Crear un programa de becas para estudiantes destacados de estratos '
-              '1, 2 y 3 que quieran acceder a educacion superior.',
-      'category': 'Educacion',
-      'icon': Iconsax.book,
-    },
-    <String, dynamic>{
-      'title': 'Centros de salud barriales',
-      'description':
-          'Construir y equipar centros de atencion primaria en cada comuna para '
-              'descongestionar el hospital universitario y acercar la salud a las familias.',
-      'category': 'Salud',
-      'icon': Iconsax.hospital,
-    },
-    <String, dynamic>{
-      'title': 'Brigadas de salud comunitarias',
-      'description':
-          'Implementar jornadas periodicas de salud preventiva, vacunacion y '
-              'atencion medica gratuita en los barrios mas vulnerables.',
-      'category': 'Salud',
-      'icon': Iconsax.health,
-    },
-    <String, dynamic>{
-      'title': 'Plan de movilidad sostenible',
-      'description':
-          'Desarrollar ciclorutas seguras, mejorar el transporte publico y '
-              'crear zonas peatonales en el centro historico.',
-      'category': 'Movilidad',
-      'icon': Iconsax.car,
-    },
-    <String, dynamic>{
-      'title': 'Rehabilitacion de vias',
-      'description':
-          'Pavimentar y mantener las vias secundarias de los barrios, '
-              'garantizando acceso digno para todas las comunidades.',
-      'category': 'Movilidad',
-      'icon': Iconsax.map,
-    },
-    <String, dynamic>{
-      'title': 'Popayan: Ciudad Cultural',
-      'description':
-          'Fortalecer las tradiciones culturales, apoyar a artistas locales '
-              'y promover eventos que resalten la identidad payanesa.',
-      'category': 'Cultura',
-      'icon': Iconsax.music,
-    },
-    <String, dynamic>{
-      'title': 'Bibliotecas y centros culturales',
-      'description':
-          'Crear espacios de lectura y expresion artistica en cada comuna, '
-              'con programas gratuitos para ninos, jovenes y adultos.',
-      'category': 'Cultura',
-      'icon': Iconsax.book_1,
-    },
-  ];
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(proposalsViewModelProvider.notifier).loadProposals();
+    });
+  }
 
-  List<Map<String, dynamic>> get _filteredProposals {
-    if (_selectedCategory == 'Todos') {
-      return _proposals;
+  Color _getCategoryColor(BuildContext context, String? category) {
+    switch (category) {
+      case 'Seguridad':
+        return Theme.of(context).appColors.error.strong;
+      case 'Economia':
+        return Theme.of(context).appColors.success.strong;
+      case 'Educacion':
+        return Theme.of(context).appColors.informative.strong;
+      case 'Salud':
+        return Theme.of(context).appColors.error.strong;
+      case 'Movilidad':
+        return Theme.of(context).appColors.warning.strong;
+      case 'Cultura':
+        return Theme.of(context).appColors.primary.strong;
+      default:
+        return Theme.of(context).appColors.primary.strong;
     }
-    return _proposals
-        .where((Map<String, dynamic> p) => p['category'] == _selectedCategory)
-        .toList();
+  }
+
+  IconData _getCategoryIcon(String? category) {
+    switch (category) {
+      case 'Seguridad':
+        return Iconsax.shield_tick;
+      case 'Economia':
+        return Iconsax.chart;
+      case 'Educacion':
+        return Iconsax.teacher;
+      case 'Salud':
+        return Iconsax.hospital;
+      case 'Movilidad':
+        return Iconsax.car;
+      case 'Cultura':
+        return Iconsax.music;
+      default:
+        return Iconsax.star;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final ProposalsState proposalsState =
+        ref.watch(proposalsViewModelProvider);
     final Responsive responsive = Responsive.of(context);
     final bool isMobile = responsive.width < 768;
-    final bool isTablet = responsive.width >= 768 && responsive.width < 1200;
+    final bool isTablet =
+        responsive.width >= 768 && responsive.width < 1200;
 
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        // Hero Section
         _buildHeroSection(context, isMobile),
-
-        // Filter Section
-        _buildFilterSection(context, isMobile),
-
-        // Proposals Grid
-        _buildProposalsGrid(context, isMobile, isTablet),
-
-        // CTA Section
+        _buildFilterSection(context, isMobile, proposalsState),
+        _buildProposalsGrid(
+          context,
+          isMobile,
+          isTablet,
+          proposalsState,
+        ),
+        _buildCitizenInvestmentBanner(context, isMobile),
         _buildCtaSection(context, isMobile),
       ],
     );
@@ -189,8 +226,9 @@ class _ProposalsScreenState extends State<ProposalsScreen> {
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 700),
             child: BaseText(
-              'Un plan construido con la comunidad, para resolver los problemas '
-              'reales de nuestra ciudad y construir el Popayan que merecemos.',
+              'Un plan construido con la comunidad, para resolver '
+              'los problemas reales de nuestra ciudad y construir '
+              'el Popayan que merecemos.',
               style: isMobile ? TypoSecondary.b2r : TypoSecondary.b1r,
               textAlign: TextAlign.center,
             ),
@@ -200,7 +238,13 @@ class _ProposalsScreenState extends State<ProposalsScreen> {
     );
   }
 
-  Widget _buildFilterSection(BuildContext context, bool isMobile) {
+  Widget _buildFilterSection(
+    BuildContext context,
+    bool isMobile,
+    ProposalsState proposalsState,
+  ) {
+    final String selectedCategory =
+        proposalsState.selectedCategory ?? 'Todos';
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isMobile ? 20 : 80,
@@ -218,24 +262,27 @@ class _ProposalsScreenState extends State<ProposalsScreen> {
             spacing: 12,
             runSpacing: 12,
             children: _categories.map((String category) {
-              final bool isSelected = _selectedCategory == category;
+              final bool isSelected = selectedCategory == category;
               return FilterChip(
                 label: Text(category),
                 selected: isSelected,
                 onSelected: (bool selected) {
-                  setState(() {
-                    _selectedCategory = category;
-                  });
+                  ref
+                      .read(proposalsViewModelProvider.notifier)
+                      .setFilter(category);
                 },
                 backgroundColor:
                     Theme.of(context).appColors.neutral.subtle,
-                selectedColor: Theme.of(context).appColors.primary.soft,
-                checkmarkColor: Theme.of(context).appColors.primary.strong,
+                selectedColor:
+                    Theme.of(context).appColors.primary.soft,
+                checkmarkColor:
+                    Theme.of(context).appColors.primary.strong,
                 labelStyle: TypoSecondary.b3r.copyWith(
                   color: isSelected
                       ? Theme.of(context).appColors.primary.strong
                       : null,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontWeight:
+                      isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
                 side: BorderSide(
                   color: isSelected
@@ -254,9 +301,30 @@ class _ProposalsScreenState extends State<ProposalsScreen> {
     BuildContext context,
     bool isMobile,
     bool isTablet,
+    ProposalsState proposalsState,
   ) {
     final int crossAxisCount = isMobile ? 1 : (isTablet ? 2 : 3);
-    final List<Map<String, dynamic>> proposals = _filteredProposals;
+
+    if (proposalsState.isLoading) {
+      return const Padding(
+        padding: EdgeInsets.all(40),
+        child: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (proposalsState.error != null) {
+      return Padding(
+        padding: const EdgeInsets.all(40),
+        child: Center(
+          child: BaseText(
+            proposalsState.error!,
+            style: TypoSecondary.b2r,
+          ),
+        ),
+      );
+    }
+
+    final List<Proposal> proposals = proposalsState.filteredProposals;
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -284,15 +352,157 @@ class _ProposalsScreenState extends State<ProposalsScreen> {
               ),
               itemCount: proposals.length,
               itemBuilder: (BuildContext context, int index) {
-                final Map<String, dynamic> proposal = proposals[index];
+                final Proposal proposal = proposals[index];
                 return _ProposalCard(
-                  title: proposal['title'] as String,
-                  description: proposal['description'] as String,
-                  category: proposal['category'] as String,
-                  icon: proposal['icon'] as IconData,
+                  title: proposal.title,
+                  description: proposal.description ?? '',
+                  category: proposal.category ?? '',
+                  icon: _getCategoryIcon(proposal.category),
+                  categoryColor:
+                      _getCategoryColor(context, proposal.category),
                 );
               },
             ),
+    );
+  }
+
+  Widget _buildCitizenInvestmentBanner(
+    BuildContext context,
+    bool isMobile,
+  ) {
+    final Color white =
+        Theme.of(context).appColors.neutralNoChange.subtle;
+    final Color primary = Theme.of(context).appColors.primary.strong;
+    final Color warning = Theme.of(context).appColors.warning.strong;
+
+    final Widget content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            Icon(Iconsax.chart_1, color: white, size: 28),
+            const SizedBox(width: 12),
+            BaseText.noChangeSubtle(
+              'TU POPAYÁN',
+              style: TypoSubtitles.s2.copyWith(
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        BaseText.noChangeSubtle(
+          '¿Cómo invertirías 830 mil millones de pesos en Popayán? '
+          'Tú decides las prioridades.',
+          style: isMobile ? TypoSecondary.b3r : TypoSecondary.b2r,
+        ),
+        const SizedBox(height: 16),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: LinearProgressIndicator(
+            value: 0.65,
+            backgroundColor: white.withValues(alpha: 0.2),
+            valueColor: AlwaysStoppedAnimation<Color>(
+              white.withValues(alpha: 0.7),
+            ),
+            minHeight: 6,
+          ),
+        ),
+        const SizedBox(height: 6),
+        BaseText.noChangeSubtle(
+          '~65% del presupuesto municipal',
+          style: TypoSecondary.b4r.copyWith(
+            color: white.withValues(alpha: 0.7),
+          ),
+        ),
+        const SizedBox(height: 24),
+        ElevatedButton.icon(
+          onPressed: () => context.go(Routes.citizenInvestment),
+          icon: Icon(Iconsax.calculator, color: primary),
+          label: Text(
+            'Calcular mi inversión',
+            style: TypoSecondary.b3r.copyWith(
+              color: primary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: white,
+            foregroundColor: primary,
+            padding: EdgeInsets.symmetric(
+              horizontal: isMobile ? 24 : 32,
+              vertical: 14,
+            ),
+          ),
+        ),
+      ],
+    );
+
+    return Padding(
+      padding: EdgeInsets.symmetric(
+        horizontal: isMobile ? 20 : 80,
+        vertical: 32,
+      ),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: <Widget>[
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(isMobile ? 24 : 36),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: <Color>[
+                  primary,
+                  Theme.of(context).appColors.secondary.strong,
+                ],
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: isMobile
+                ? content
+                : Row(
+                    children: <Widget>[
+                      Expanded(child: content),
+                      const SizedBox(width: 32),
+                      Icon(
+                        Iconsax.money_recive,
+                        size: 72,
+                        color: white.withValues(alpha: 0.25),
+                      ),
+                    ],
+                  ),
+          ),
+          // Badge "NUEVO"
+          Positioned(
+            top: -12,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 6,
+              ),
+              decoration: BoxDecoration(
+                color: warning,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(Iconsax.star, color: white, size: 14),
+                  const SizedBox(width: 4),
+                  BaseText.noChangeSubtle(
+                    'NUEVO',
+                    style: TypoSecondary.b4r.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -323,13 +533,14 @@ class _ProposalsScreenState extends State<ProposalsScreen> {
           ),
           SizedBox(height: isMobile ? 32 : 48),
           ElevatedButton.icon(
-            onPressed: () {},
+            onPressed: () => context.go(Routes.contact),
             icon: const Icon(Iconsax.message),
             label: const Text('Enviar propuesta'),
             style: ElevatedButton.styleFrom(
               backgroundColor:
                   Theme.of(context).appColors.neutralNoChange.subtle,
-              foregroundColor: Theme.of(context).appColors.secondary.base,
+              foregroundColor:
+                  Theme.of(context).appColors.secondary.base,
               padding: EdgeInsets.symmetric(
                 horizontal: isMobile ? 32 : 48,
                 vertical: isMobile ? 16 : 20,
@@ -342,18 +553,24 @@ class _ProposalsScreenState extends State<ProposalsScreen> {
   }
 }
 
+// ---------------------------------------------------------------------------
+// Private widget
+// ---------------------------------------------------------------------------
+
 class _ProposalCard extends StatefulWidget {
   const _ProposalCard({
     required this.title,
     required this.description,
     required this.category,
     required this.icon,
+    required this.categoryColor,
   });
 
   final String title;
   final String description;
   final String category;
   final IconData icon;
+  final Color categoryColor;
 
   @override
   State<_ProposalCard> createState() => _ProposalCardState();
@@ -362,28 +579,9 @@ class _ProposalCard extends StatefulWidget {
 class _ProposalCardState extends State<_ProposalCard> {
   bool _isHovered = false;
 
-  Color _getCategoryColor(BuildContext context) {
-    switch (widget.category) {
-      case 'Seguridad':
-        return Theme.of(context).appColors.error.strong;
-      case 'Economia':
-        return Theme.of(context).appColors.success.strong;
-      case 'Educacion':
-        return Theme.of(context).appColors.informative.strong;
-      case 'Salud':
-        return Theme.of(context).appColors.error.strong;
-      case 'Movilidad':
-        return Theme.of(context).appColors.warning.strong;
-      case 'Cultura':
-        return Theme.of(context).appColors.primary.strong;
-      default:
-        return Theme.of(context).appColors.primary.strong;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final Color categoryColor = _getCategoryColor(context);
+    final Color categoryColor = widget.categoryColor;
 
     return MouseRegion(
       onEnter: (_) => setState(() => _isHovered = true),
@@ -414,7 +612,6 @@ class _ProposalCardState extends State<_ProposalCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // Category badge and icon
               Row(
                 children: <Widget>[
                   Container(
@@ -450,7 +647,6 @@ class _ProposalCardState extends State<_ProposalCard> {
                 ],
               ),
               const SizedBox(height: 20),
-              // Title
               BaseText(
                 widget.title,
                 style: TypoSubtitles.s2.copyWith(
@@ -460,7 +656,6 @@ class _ProposalCardState extends State<_ProposalCard> {
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 12),
-              // Description
               Expanded(
                 child: BaseText(
                   widget.description,

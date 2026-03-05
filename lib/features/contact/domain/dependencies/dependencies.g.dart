@@ -9,91 +9,50 @@ part of 'dependencies.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(baseapiUnRepository)
-const baseapiUnRepositoryProvider = BaseapiUnRepositoryProvider._();
+@ProviderFor(sendContactMessageUseCase)
+const sendContactMessageUseCaseProvider = SendContactMessageUseCaseProvider._();
 
-final class BaseapiUnRepositoryProvider
-    extends $FunctionalProvider<BaseRepository, BaseRepository, BaseRepository>
-    with $Provider<BaseRepository> {
-  const BaseapiUnRepositoryProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'baseapiUnRepositoryProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$baseapiUnRepositoryHash();
-
-  @$internal
-  @override
-  $ProviderElement<BaseRepository> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  BaseRepository create(Ref ref) {
-    return baseapiUnRepository(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(BaseRepository value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<BaseRepository>(value),
-    );
-  }
-}
-
-String _$baseapiUnRepositoryHash() =>
-    r'ad4d0f7a8a4e4d8d9b16770c4f330c56afde464f';
-
-@ProviderFor(getExampleUseCase)
-const getExampleUseCaseProvider = GetExampleUseCaseProvider._();
-
-final class GetExampleUseCaseProvider
+final class SendContactMessageUseCaseProvider
     extends
         $FunctionalProvider<
-          GetExampleUseCase,
-          GetExampleUseCase,
-          GetExampleUseCase
+          SendContactMessageUseCase,
+          SendContactMessageUseCase,
+          SendContactMessageUseCase
         >
-    with $Provider<GetExampleUseCase> {
-  const GetExampleUseCaseProvider._()
+    with $Provider<SendContactMessageUseCase> {
+  const SendContactMessageUseCaseProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'getExampleUseCaseProvider',
+        name: r'sendContactMessageUseCaseProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$getExampleUseCaseHash();
+  String debugGetCreateSourceHash() => _$sendContactMessageUseCaseHash();
 
   @$internal
   @override
-  $ProviderElement<GetExampleUseCase> $createElement(
+  $ProviderElement<SendContactMessageUseCase> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  GetExampleUseCase create(Ref ref) {
-    return getExampleUseCase(ref);
+  SendContactMessageUseCase create(Ref ref) {
+    return sendContactMessageUseCase(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GetExampleUseCase value) {
+  Override overrideWithValue(SendContactMessageUseCase value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<GetExampleUseCase>(value),
+      providerOverride: $SyncValueProvider<SendContactMessageUseCase>(value),
     );
   }
 }
 
-String _$getExampleUseCaseHash() => r'e3ea44a47e9a67bf3e577c6a12d708b8c53b325c';
+String _$sendContactMessageUseCaseHash() =>
+    r'ea0435cc3441ad6275ea6a68ee1eb247bd1f8d08';

@@ -1,6 +1,7 @@
 library;
 
+import '../../../../typing/entities/campaign/candidate_info.dart';
 import '../../../../typing/result/result.dart';
-import '../../data/repositories/repositories.dart';
+import '../repositories/repositories.dart';
 
-part 'get_example.dart';
+part 'get_candidate_info_use_case.dart';

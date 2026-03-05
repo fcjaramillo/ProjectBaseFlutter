@@ -9,91 +9,144 @@ part of 'dependencies.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(baseapiUnRepository)
-const baseapiUnRepositoryProvider = BaseapiUnRepositoryProvider._();
+@ProviderFor(getEventsUseCase)
+const getEventsUseCaseProvider = GetEventsUseCaseProvider._();
 
-final class BaseapiUnRepositoryProvider
-    extends $FunctionalProvider<BaseRepository, BaseRepository, BaseRepository>
-    with $Provider<BaseRepository> {
-  const BaseapiUnRepositoryProvider._()
+final class GetEventsUseCaseProvider
+    extends
+        $FunctionalProvider<
+          GetEventsUseCase,
+          GetEventsUseCase,
+          GetEventsUseCase
+        >
+    with $Provider<GetEventsUseCase> {
+  const GetEventsUseCaseProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'baseapiUnRepositoryProvider',
+        name: r'getEventsUseCaseProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$baseapiUnRepositoryHash();
+  String debugGetCreateSourceHash() => _$getEventsUseCaseHash();
 
   @$internal
   @override
-  $ProviderElement<BaseRepository> $createElement($ProviderPointer pointer) =>
+  $ProviderElement<GetEventsUseCase> $createElement($ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  BaseRepository create(Ref ref) {
-    return baseapiUnRepository(ref);
+  GetEventsUseCase create(Ref ref) {
+    return getEventsUseCase(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(BaseRepository value) {
+  Override overrideWithValue(GetEventsUseCase value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<BaseRepository>(value),
+      providerOverride: $SyncValueProvider<GetEventsUseCase>(value),
     );
   }
 }
 
-String _$baseapiUnRepositoryHash() =>
-    r'ad4d0f7a8a4e4d8d9b16770c4f330c56afde464f';
+String _$getEventsUseCaseHash() => r'b7474de6495a150dc75c1b2641c7521fc064259c';
 
-@ProviderFor(getExampleUseCase)
-const getExampleUseCaseProvider = GetExampleUseCaseProvider._();
+@ProviderFor(getEventByIdUseCase)
+const getEventByIdUseCaseProvider = GetEventByIdUseCaseProvider._();
 
-final class GetExampleUseCaseProvider
+final class GetEventByIdUseCaseProvider
     extends
         $FunctionalProvider<
-          GetExampleUseCase,
-          GetExampleUseCase,
-          GetExampleUseCase
+          GetEventByIdUseCase,
+          GetEventByIdUseCase,
+          GetEventByIdUseCase
         >
-    with $Provider<GetExampleUseCase> {
-  const GetExampleUseCaseProvider._()
+    with $Provider<GetEventByIdUseCase> {
+  const GetEventByIdUseCaseProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'getExampleUseCaseProvider',
+        name: r'getEventByIdUseCaseProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$getExampleUseCaseHash();
+  String debugGetCreateSourceHash() => _$getEventByIdUseCaseHash();
 
   @$internal
   @override
-  $ProviderElement<GetExampleUseCase> $createElement(
+  $ProviderElement<GetEventByIdUseCase> $createElement(
     $ProviderPointer pointer,
   ) => $ProviderElement(pointer);
 
   @override
-  GetExampleUseCase create(Ref ref) {
-    return getExampleUseCase(ref);
+  GetEventByIdUseCase create(Ref ref) {
+    return getEventByIdUseCase(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(GetExampleUseCase value) {
+  Override overrideWithValue(GetEventByIdUseCase value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<GetExampleUseCase>(value),
+      providerOverride: $SyncValueProvider<GetEventByIdUseCase>(value),
     );
   }
 }
 
-String _$getExampleUseCaseHash() => r'e3ea44a47e9a67bf3e577c6a12d708b8c53b325c';
+String _$getEventByIdUseCaseHash() =>
+    r'c6034cf3d767a948d92b1a45a311a7f6580d017d';
+
+@ProviderFor(getFeaturedEventsUseCase)
+const getFeaturedEventsUseCaseProvider = GetFeaturedEventsUseCaseProvider._();
+
+final class GetFeaturedEventsUseCaseProvider
+    extends
+        $FunctionalProvider<
+          GetFeaturedEventsUseCase,
+          GetFeaturedEventsUseCase,
+          GetFeaturedEventsUseCase
+        >
+    with $Provider<GetFeaturedEventsUseCase> {
+  const GetFeaturedEventsUseCaseProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'getFeaturedEventsUseCaseProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$getFeaturedEventsUseCaseHash();
+
+  @$internal
+  @override
+  $ProviderElement<GetFeaturedEventsUseCase> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  GetFeaturedEventsUseCase create(Ref ref) {
+    return getFeaturedEventsUseCase(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(GetFeaturedEventsUseCase value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<GetFeaturedEventsUseCase>(value),
+    );
+  }
+}
+
+String _$getFeaturedEventsUseCaseHash() =>
+    r'7e82a452206e5f9d2cc719fa38931fc17006d4d8';

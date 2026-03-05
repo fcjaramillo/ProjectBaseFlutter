@@ -9,85 +9,43 @@ part of 'dependencies.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(baseapiUn)
-const baseapiUnProvider = BaseapiUnProvider._();
+@ProviderFor(homeRepository)
+const homeRepositoryProvider = HomeRepositoryProvider._();
 
-final class BaseapiUnProvider
-    extends $FunctionalProvider<ApiUtils, ApiUtils, ApiUtils>
-    with $Provider<ApiUtils> {
-  const BaseapiUnProvider._()
+final class HomeRepositoryProvider
+    extends $FunctionalProvider<HomeRepository, HomeRepository, HomeRepository>
+    with $Provider<HomeRepository> {
+  const HomeRepositoryProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'baseapiUnProvider',
+        name: r'homeRepositoryProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$baseapiUnHash();
+  String debugGetCreateSourceHash() => _$homeRepositoryHash();
 
   @$internal
   @override
-  $ProviderElement<ApiUtils> $createElement($ProviderPointer pointer) =>
+  $ProviderElement<HomeRepository> $createElement($ProviderPointer pointer) =>
       $ProviderElement(pointer);
 
   @override
-  ApiUtils create(Ref ref) {
-    return baseapiUn(ref);
+  HomeRepository create(Ref ref) {
+    return homeRepository(ref);
   }
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ApiUtils value) {
+  Override overrideWithValue(HomeRepository value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<ApiUtils>(value),
+      providerOverride: $SyncValueProvider<HomeRepository>(value),
     );
   }
 }
 
-String _$baseapiUnHash() => r'0207538a30ad98a56a20452fe30dda65e12420e5';
-
-@ProviderFor(baseapiUnDataSource)
-const baseapiUnDataSourceProvider = BaseapiUnDataSourceProvider._();
-
-final class BaseapiUnDataSourceProvider
-    extends $FunctionalProvider<BaseDataSource, BaseDataSource, BaseDataSource>
-    with $Provider<BaseDataSource> {
-  const BaseapiUnDataSourceProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'baseapiUnDataSourceProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$baseapiUnDataSourceHash();
-
-  @$internal
-  @override
-  $ProviderElement<BaseDataSource> $createElement($ProviderPointer pointer) =>
-      $ProviderElement(pointer);
-
-  @override
-  BaseDataSource create(Ref ref) {
-    return baseapiUnDataSource(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(BaseDataSource value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<BaseDataSource>(value),
-    );
-  }
-}
-
-String _$baseapiUnDataSourceHash() =>
-    r'6dab0e921dcf6278914c7abb65705c33fbfcb746';
+String _$homeRepositoryHash() => r'691dbecdd4e46f139eb90fa8b774008b78469d20';
