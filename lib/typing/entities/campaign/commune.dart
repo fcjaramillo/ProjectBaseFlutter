@@ -11,6 +11,8 @@ class Commune extends Equatable {
     this.neighborhoods,
     this.svgPath,
     this.color,
+    this.latitude,
+    this.longitude,
     this.createdAt,
     this.updatedAt,
   });
@@ -30,6 +32,12 @@ class Commune extends Equatable {
                 int.parse((json['color'] as String).replaceFirst('#', '0xFF')),
               )
             : null,
+        latitude: json['latitude'] != null
+            ? double.parse(json['latitude'].toString())
+            : null,
+        longitude: json['longitude'] != null
+            ? double.parse(json['longitude'].toString())
+            : null,
         createdAt: json['created_at'] != null
             ? DateTime.parse(json['created_at'] as String)
             : null,
@@ -46,6 +54,8 @@ class Commune extends Equatable {
   final List<String>? neighborhoods;
   final String? svgPath;
   final Color? color;
+  final double? latitude;
+  final double? longitude;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -62,6 +72,8 @@ class Commune extends Equatable {
         'color': color != null
             ? '#${color!.toARGB32().toRadixString(16).substring(2)}'
             : null,
+        'latitude': latitude,
+        'longitude': longitude,
         'created_at': createdAt?.toIso8601String(),
         'updated_at': updatedAt?.toIso8601String(),
       };
@@ -76,6 +88,8 @@ class Commune extends Equatable {
         neighborhoods,
         svgPath,
         color,
+        latitude,
+        longitude,
         createdAt,
         updatedAt,
       ];

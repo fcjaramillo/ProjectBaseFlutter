@@ -57,6 +57,20 @@ class _CommuneDetailScreenState
       child: Column(
         children: <Widget>[
           _buildHeader(context, isMobile, commune),
+          if (commune.latitude != null && commune.longitude != null)
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 20 : 80,
+                vertical: 24,
+              ),
+              child: CampaignMap(
+                latitude: commune.latitude!,
+                longitude: commune.longitude!,
+                height: 250,
+                zoom: 14,
+                markerColor: commune.color,
+              ),
+            ),
           _buildOverview(context, isMobile, commune),
           if (commune.neighborhoods != null &&
               commune.neighborhoods!.isNotEmpty)

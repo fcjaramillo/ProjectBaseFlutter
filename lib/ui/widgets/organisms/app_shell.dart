@@ -778,6 +778,6 @@ class _FooterSocialIcon extends StatelessWidget {
       color: Theme.of(context).appColors.neutralNoChange.subtle,
     ),
     onPressed: onPressed,
-    iconSize: 24,
+    iconSize: 36,
   );
 }

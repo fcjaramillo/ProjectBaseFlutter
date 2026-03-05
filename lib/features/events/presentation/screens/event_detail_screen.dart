@@ -13,6 +13,7 @@ import '../../../../ui/ions/ions.dart';
 import '../../../../ui/routes/routes.dart';
 import '../../../../ui/utils/utils.dart';
 import '../../../../ui/widgets/atoms/atoms.dart';
+import '../../../../ui/widgets/organisms/organisms.dart';
 import '../../domain/dependencies/dependencies.dart';
 
 part 'event_detail_screen.g.dart';
@@ -453,62 +454,65 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     BuildContext context,
     bool isMobile,
     CampaignEvent event,
-  ) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: isMobile ? 20 : 80,
-        vertical: isMobile ? 40 : 60,
-      ),
-      decoration: BoxDecoration(
-        color: Theme.of(context).appColors.neutral.subtle,
-      ),
-      child: Column(
-        children: <Widget>[
-          BaseText(
-            'Ubicacion',
-            style: TypoPrimary.h4.copyWith(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 24),
-          Container(
-            height: 200,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Theme.of(context).appColors.neutral.soft,
-              borderRadius: BorderRadius.circular(16),
+  ) =>
+      Container(
+        padding: EdgeInsets.symmetric(
+          horizontal: isMobile ? 20 : 80,
+          vertical: isMobile ? 40 : 60,
+        ),
+        decoration: BoxDecoration(
+          color: Theme.of(context).appColors.neutral.subtle,
+        ),
+        child: Column(
+          children: <Widget>[
+            BaseText(
+              'Ubicacion',
+              style: TypoPrimary.h4.copyWith(fontWeight: FontWeight.bold),
             ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Icon(
+            const SizedBox(height: 24),
+            if (event.hasCoordinates)
+              CampaignMap(
+                latitude: event.latitude!,
+                longitude: event.longitude!,
+                height: 200,
+              )
+            else
+              Container(
+                height: 200,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).appColors.neutral.soft,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Center(
+                  child: Icon(
                     Iconsax.map_1,
                     size: 48,
                     color: Theme.of(context).appColors.neutral.strong,
                   ),
-                  const SizedBox(height: 16),
-                  if (event.location != null)
-                    BaseText(
-                      event.location!,
-                      style: TypoSubtitles.s2.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  if (event.address != null)
-                    BaseText(
-                      event.address!,
-                      style: TypoSecondary.b3r.copyWith(
-                        color:
-                            Theme.of(context).appColors.text.scale.soft,
-                      ),
-                    ),
-                ],
+                ),
               ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+            if (event.location != null || event.address != null) ...<Widget>[
+              const SizedBox(height: 16),
+              if (event.location != null)
+                BaseText(
+                  event.location!,
+                  style: TypoSubtitles.s2
+                      .copyWith(fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+              if (event.address != null)
+                BaseText(
+                  event.address!,
+                  style: TypoSecondary.b3r.copyWith(
+                    color: Theme.of(context).appColors.text.scale.soft,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+            ],
+          ],
+        ),
+      );
 
   Widget _buildCtaSection(BuildContext context, bool isMobile) {
     return Container(

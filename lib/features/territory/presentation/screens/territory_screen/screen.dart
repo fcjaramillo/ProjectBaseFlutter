@@ -95,41 +95,48 @@ class _TerritoryScreenState extends ConsumerState<TerritoryScreen> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
-            Container(
-              height: isMobile ? 300 : 400,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Theme.of(context).appColors.tertiary.subtle,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: Theme.of(context).appColors.neutral.soft,
+            if (territoryState.communes.isNotEmpty)
+              CampaignMapWithMarkers(
+                height: isMobile ? 300 : 400,
+                center: const LatLng(2.4448, -76.6147),
+                selectedLabel: territoryState.selectedCommune?.displayName,
+                markers: territoryState.communes
+                    .where(
+                      (Commune c) =>
+                          c.latitude != null && c.longitude != null,
+                    )
+                    .map(
+                      (Commune c) => CampaignMapMarker(
+                        latitude: c.latitude!,
+                        longitude: c.longitude!,
+                        label: c.displayName,
+                        color: c.color,
+                        onTap: () => ref
+                            .read(territoryViewModelProvider.notifier)
+                            .selectCommune(c.id),
+                      ),
+                    )
+                    .toList(),
+              )
+            else
+              Container(
+                height: isMobile ? 300 : 400,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).appColors.tertiary.subtle,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: Theme.of(context).appColors.neutral.soft,
+                  ),
+                ),
+                child: Center(
+                  child: Icon(
+                    Iconsax.map_1,
+                    size: 64,
+                    color: Theme.of(context).appColors.primary.soft,
+                  ),
                 ),
               ),
-              child: Stack(
-                children: <Widget>[
-                  Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Icon(
-                          Iconsax.map_1,
-                          size: 64,
-                          color: Theme.of(context).appColors.primary.soft,
-                        ),
-                        const SizedBox(height: 16),
-                        BaseText(
-                          'Mapa interactivo de Popayan',
-                          style: TypoSecondary.b2r.copyWith(
-                            color:
-                                Theme.of(context).appColors.text.scale.soft,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
             const SizedBox(height: 32),
             if (territoryState.isLoading)
               const CircularProgressIndicator()

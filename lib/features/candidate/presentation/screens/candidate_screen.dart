@@ -285,6 +285,13 @@ class _CandidateScreenState extends ConsumerState<CandidateScreen> {
     bool isTablet,
     _CandidateState state,
   ) {
+    final List<Color> cardColors = <Color>[
+      Theme.of(context).appColors.primary.strong,
+      Theme.of(context).appColors.informative.strong,
+      Theme.of(context).appColors.secondary.strong,
+      Theme.of(context).appColors.error.strong,
+    ];
+
     final List<Map<String, dynamic>> defaultValues = <Map<String, dynamic>>[
       <String, dynamic>{
         'icon': Iconsax.heart,
@@ -323,7 +330,17 @@ class _CandidateScreenState extends ConsumerState<CandidateScreen> {
               .toList()
         : defaultValues;
 
-    final int crossAxisCount = isMobile ? 1 : (isTablet ? 2 : 4);
+    final List<Color> colors = displayValues.length <= cardColors.length
+        ? cardColors.sublist(0, displayValues.length)
+        : List<Color>.generate(
+            displayValues.length,
+            (int i) => cardColors[i % cardColors.length],
+          );
+
+    final int maxColumns = isMobile ? 1 : (isTablet ? 2 : 4);
+    final int crossAxisCount = displayValues.length < maxColumns
+        ? displayValues.length
+        : maxColumns;
 
     return Container(
       padding: EdgeInsets.symmetric(
@@ -356,6 +373,7 @@ class _CandidateScreenState extends ConsumerState<CandidateScreen> {
                 icon: value['icon'] as IconData,
                 title: value['title'] as String,
                 description: value['description'] as String,
+                color: colors[index],
               );
             },
           ),
@@ -472,23 +490,33 @@ class _ValueCard extends StatelessWidget {
     required this.icon,
     required this.title,
     required this.description,
+    required this.color,
   });
 
   final IconData icon;
   final String title;
   final String description;
+  final Color color;
 
   @override
   Widget build(BuildContext context) => Container(
     padding: const EdgeInsets.all(24),
     decoration: BoxDecoration(
-      color: Theme.of(context).appColors.neutral.subtle,
+      gradient: LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: <Color>[
+          color.withValues(alpha: 0.18),
+          color.withValues(alpha: 0.06),
+        ],
+      ),
       borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: color.withValues(alpha: 0.35), width: 1.5),
       boxShadow: <BoxShadow>[
         BoxShadow(
-          color: Theme.of(context).appColors.opacity.base,
-          blurRadius: 8,
-          offset: const Offset(0, 4),
+          color: color.withValues(alpha: 0.2),
+          blurRadius: 16,
+          offset: const Offset(0, 6),
         ),
       ],
     ),
@@ -498,14 +526,10 @@ class _ValueCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Theme.of(context).appColors.primary.soft,
+            color: color.withValues(alpha: 0.18),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Icon(
-            icon,
-            size: 32,
-            color: Theme.of(context).appColors.primary.strong,
-          ),
+          child: Icon(icon, size: 32, color: color),
         ),
         const SizedBox(height: 16),
         BaseText(

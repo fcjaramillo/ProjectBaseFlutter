@@ -2,6 +2,7 @@ library;
 
 import 'package:flutter/material.dart' hide Colors;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -585,9 +586,7 @@ class _TimelineMilestone extends StatelessWidget {
                 side: BorderSide(color: categoryColor),
                 backgroundColor: categoryColor.withValues(alpha: 0.1),
               ),
-              onPressed: () {
-                print('Ver imágenes');
-              },
+              onPressed: () => context.go('/galeria'),
               child: Text(
                 'Galeria',
                 style: TypoButton.b2.copyWith(
@@ -625,3 +624,5 @@ class _TimelineMilestone extends StatelessWidget {
     ),
   );
 }
+
+

@@ -350,32 +350,19 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
           subtitle: 'Visita nuestra sede de campana.',
         ),
         const SizedBox(height: 32),
-        Container(
-          height: 300,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Theme.of(context).appColors.neutral.soft,
-            borderRadius: BorderRadius.circular(16),
+        CampaignMap(
+          latitude: 2.4410120907941955,
+          longitude: -76.60624492621537,
+          zoom: 16,
+          markerColor: Theme.of(context).appColors.primary.strong,
+        ),
+        const SizedBox(height: 16),
+        BaseText(
+          'Cra. 6 #5-44, Centro, Popayan, Cauca',
+          style: TypoSecondary.b2r.copyWith(
+            color: Theme.of(context).appColors.text.scale.soft,
           ),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(
-                  Iconsax.map_1,
-                  size: 64,
-                  color: Theme.of(context).appColors.neutral.strong,
-                ),
-                const SizedBox(height: 16),
-                BaseText(
-                  'Mapa interactivo proximamente',
-                  style: TypoSecondary.b2r.copyWith(
-                    color: Theme.of(context).appColors.text.scale.soft,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          textAlign: TextAlign.center,
         ),
       ],
     ),
