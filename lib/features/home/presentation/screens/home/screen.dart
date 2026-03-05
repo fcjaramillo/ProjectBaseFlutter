@@ -684,6 +684,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               OutlinedButton(
                 onPressed: () => context.go('/contacto'),
                 style: OutlinedButton.styleFrom(
+                  backgroundColor: const Color(0x00000000),
                   foregroundColor: Theme.of(
                     context,
                   ).appColors.neutralNoChange.subtle,

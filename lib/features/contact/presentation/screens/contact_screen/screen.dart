@@ -182,24 +182,29 @@ class _ContactScreenState extends ConsumerState<ContactScreen> {
         style: TypoSubtitles.s1.copyWith(fontWeight: FontWeight.bold),
       ),
       const SizedBox(height: 16),
-      Row(
+      Wrap(
+        spacing: 12,
+        runSpacing: 12,
         children: <Widget>[
           _SocialButton(
             network: SocialNetwork.facebook,
             label: 'Facebook',
             onTap: () => launchSocialUrl(SocialLinks.facebook),
           ),
-          const SizedBox(width: 12),
           _SocialButton(
             network: SocialNetwork.instagram,
             label: 'Instagram',
             onTap: () => launchSocialUrl(SocialLinks.instagram),
           ),
-          const SizedBox(width: 12),
           _SocialButton(
             network: SocialNetwork.twitter,
             label: 'Twitter',
             onTap: () => launchSocialUrl(SocialLinks.twitter),
+          ),
+          _SocialButton(
+            network: SocialNetwork.youtube,
+            label: 'YouTube',
+            onTap: () => launchSocialUrl(SocialLinks.youtube),
           ),
         ],
       ),
@@ -500,17 +505,17 @@ class _FormField extends StatelessWidget {
         maxLines: maxLines,
         decoration: InputDecoration(
           filled: true,
-          fillColor: Theme.of(context).appColors.neutral.subtle,
+          fillColor: Theme.of(context).colorScheme.surface,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: Theme.of(context).appColors.neutral.soft,
+              color: Theme.of(context).colorScheme.outline,
             ),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: Theme.of(context).appColors.neutral.soft,
+              color: Theme.of(context).colorScheme.outline,
             ),
           ),
           focusedBorder: OutlineInputBorder(

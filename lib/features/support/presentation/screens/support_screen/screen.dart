@@ -352,20 +352,26 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                         initialValue: _selectedCommune,
                         decoration: InputDecoration(
                           filled: true,
-                          fillColor:
-                              Theme.of(context).appColors.neutral.subtle,
+                          fillColor: Theme.of(context).colorScheme.surface,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color:
-                                  Theme.of(context).appColors.neutral.soft,
+                              color: Theme.of(context).colorScheme.outline,
                             ),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
-                              color:
-                                  Theme.of(context).appColors.neutral.soft,
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide(
+                              color: Theme.of(
+                                context,
+                              ).appColors.primary.strong,
+                              width: 2,
                             ),
                           ),
                         ),
@@ -416,11 +422,23 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
                               });
                             },
                             backgroundColor:
-                                Theme.of(context).appColors.neutral.subtle,
+                                Theme.of(context).colorScheme.surface,
                             selectedColor:
                                 Theme.of(context).appColors.primary.soft,
                             checkmarkColor:
                                 Theme.of(context).appColors.primary.strong,
+                            side: isSelected
+                                ? BorderSide(
+                                    color: Theme.of(
+                                      context,
+                                    ).appColors.primary.strong,
+                                  )
+                                : BorderSide(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.outline,
+                                  ),
+                            showCheckmark: true,
                           );
                         }).toList(),
                       ),
@@ -489,17 +507,17 @@ class _SupportScreenState extends ConsumerState<SupportScreen> {
             keyboardType: keyboardType,
             decoration: InputDecoration(
               filled: true,
-              fillColor: Theme.of(context).appColors.neutral.subtle,
+              fillColor: Theme.of(context).colorScheme.surface,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
-                  color: Theme.of(context).appColors.neutral.soft,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(
-                  color: Theme.of(context).appColors.neutral.soft,
+                  color: Theme.of(context).colorScheme.outline,
                 ),
               ),
               focusedBorder: OutlineInputBorder(

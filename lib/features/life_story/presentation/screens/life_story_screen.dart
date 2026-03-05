@@ -38,8 +38,7 @@ class _LifeStoryState {
     }
     return milestones
         .where(
-          (LifeMilestone m) =>
-              m.category?.name == selectedFilter.toLowerCase(),
+          (LifeMilestone m) => m.category?.name == selectedFilter.toLowerCase(),
         )
         .toList();
   }
@@ -69,8 +68,9 @@ class _LifeStoryViewModel extends _$LifeStoryViewModel {
   Future<void> loadMilestones() async {
     state = state.copyWith(isLoading: true);
 
-    final ResultDef<List<LifeMilestone>> result =
-        await ref.read(getLifeMilestonesUseCaseProvider).call();
+    final ResultDef<List<LifeMilestone>> result = await ref
+        .read(getLifeMilestonesUseCaseProvider)
+        .call();
 
     result.when(
       fail: (BackError error) {
@@ -80,10 +80,7 @@ class _LifeStoryViewModel extends _$LifeStoryViewModel {
         );
       },
       success: (List<LifeMilestone> milestones) {
-        state = state.copyWith(
-          isLoading: false,
-          milestones: milestones,
-        );
+        state = state.copyWith(isLoading: false, milestones: milestones);
       },
     );
   }
@@ -187,10 +184,7 @@ class _LifeStoryScreenState extends ConsumerState<LifeStoryScreen> {
     bool isMobile,
     _LifeStoryState state,
   ) => Container(
-    padding: EdgeInsets.symmetric(
-      horizontal: isMobile ? 20 : 80,
-      vertical: 30,
-    ),
+    padding: EdgeInsets.symmetric(horizontal: isMobile ? 20 : 80, vertical: 30),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -212,16 +206,14 @@ class _LifeStoryScreenState extends ConsumerState<LifeStoryScreen> {
                     .read(_lifeStoryViewModelProvider.notifier)
                     .setFilter(filter);
               },
-              backgroundColor:
-                  Theme.of(context).appColors.neutral.subtle,
+              backgroundColor: Theme.of(context).appColors.neutral.subtle,
               selectedColor: Theme.of(context).appColors.primary.soft,
               checkmarkColor: Theme.of(context).appColors.primary.strong,
               labelStyle: TypoSecondary.b3r.copyWith(
                 color: isSelected
                     ? Theme.of(context).appColors.primary.strong
                     : null,
-                fontWeight:
-                    isSelected ? FontWeight.bold : FontWeight.normal,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               side: BorderSide(
                 color: isSelected
@@ -318,10 +310,7 @@ class _LifeStoryScreenState extends ConsumerState<LifeStoryScreen> {
               '"Mi vida ha sido un camino de servicio. Cada experiencia, '
               'cada reto, cada logro me ha preparado para este momento: '
               'servir a Popayan con todo mi corazon."',
-              style: (isMobile
-                      ? TypoSecondary.b1r
-                      : TypoPrimary.h4)
-                  .copyWith(
+              style: (isMobile ? TypoSecondary.b1r : TypoPrimary.h4).copyWith(
                 fontStyle: FontStyle.italic,
                 height: 1.6,
               ),
@@ -401,10 +390,7 @@ class _TimelineMilestone extends StatelessWidget {
     return _buildDesktopLayout(context, categoryColor);
   }
 
-  Widget _buildMobileLayout(
-    BuildContext context,
-    Color categoryColor,
-  ) => Stack(
+  Widget _buildMobileLayout(BuildContext context, Color categoryColor) => Stack(
     children: <Widget>[
       if (!isLast)
         Positioned(
@@ -412,8 +398,8 @@ class _TimelineMilestone extends StatelessWidget {
           top: 16,
           bottom: 0,
           child: Container(
-            width: 2,
-            color: Theme.of(context).appColors.neutral.soft,
+            width: 3,
+            color: Theme.of(context).appColors.neutral.subtle,
           ),
         ),
       Row(
@@ -429,8 +415,7 @@ class _TimelineMilestone extends StatelessWidget {
             child: Icon(
               _getCategoryIcon(),
               size: 8,
-              color:
-                  Theme.of(context).appColors.neutralNoChange.subtle,
+              color: Theme.of(context).appColors.neutralNoChange.subtle,
             ),
           ),
           const SizedBox(width: 16),
@@ -445,79 +430,75 @@ class _TimelineMilestone extends StatelessWidget {
     ],
   );
 
-  Widget _buildDesktopLayout(
-    BuildContext context,
-    Color categoryColor,
-  ) => Stack(
-    children: <Widget>[
-      if (!isLast)
-        Positioned(
-          left: 0,
-          right: 0,
-          top: 0,
-          bottom: 0,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Container(
-                width: 3,
-                color: Theme.of(context).appColors.neutral.subtle,
-              ),
-            ],
-          ),
-        ),
-      Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _buildDesktopLayout(BuildContext context, Color categoryColor) =>
+      Stack(
         children: <Widget>[
-          Expanded(
-            child: isLeft
-                ? Padding(
-                    padding: const EdgeInsets.only(bottom: 32),
-                    child: _buildCard(context, categoryColor),
-                  )
-                : const SizedBox.shrink(),
-          ),
-          // Timeline center
-          Column(
-            mainAxisSize: MainAxisSize.min,
+          if (!isLast)
+            Positioned(
+              left: 0,
+              right: 0,
+              top: 0,
+              bottom: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Container(
+                    width: 3,
+                    color: Theme.of(context).appColors.neutral.subtle,
+                  ),
+                ],
+              ),
+            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Container(
-                width: 24,
-                height: 24,
-                decoration: BoxDecoration(
-                  color: categoryColor,
-                  shape: BoxShape.circle,
-                  boxShadow: <BoxShadow>[
-                    BoxShadow(
-                      color: categoryColor.withValues(alpha: 0.3),
-                      blurRadius: 8,
-                      spreadRadius: 2,
+              Expanded(
+                child: isLeft
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: _buildCard(context, categoryColor),
+                      )
+                    : const SizedBox.shrink(),
+              ),
+              // Timeline center
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: categoryColor,
+                      shape: BoxShape.circle,
+                      boxShadow: <BoxShadow>[
+                        BoxShadow(
+                          color: categoryColor.withValues(alpha: 0.3),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: Icon(
-                  _getCategoryIcon(),
-                  size: 12,
-                  color: Theme.of(
-                    context,
-                  ).appColors.neutralNoChange.subtle,
-                ),
+                    child: Icon(
+                      _getCategoryIcon(),
+                      size: 12,
+                      color: Theme.of(context).appColors.neutralNoChange.subtle,
+                    ),
+                  ),
+                ],
+              ),
+              Expanded(
+                child: !isLeft
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 32),
+                        child: _buildCard(context, categoryColor),
+                      )
+                    : const SizedBox.shrink(),
               ),
             ],
-          ),
-          Expanded(
-            child: !isLeft
-                ? Padding(
-                    padding: const EdgeInsets.only(bottom: 32),
-                    child: _buildCard(context, categoryColor),
-                  )
-                : const SizedBox.shrink(),
           ),
         ],
-      ),
-    ],
-  );
+      );
 
   Widget _buildCard(BuildContext context, Color categoryColor) => Container(
     margin: EdgeInsets.only(
@@ -528,9 +509,7 @@ class _TimelineMilestone extends StatelessWidget {
     decoration: BoxDecoration(
       color: Theme.of(context).appColors.neutral.subtle,
       borderRadius: BorderRadius.circular(16),
-      border: Border.all(
-        color: Theme.of(context).appColors.neutral.soft,
-      ),
+      border: Border.all(color: Theme.of(context).appColors.neutral.soft),
       boxShadow: <BoxShadow>[
         BoxShadow(
           color: Theme.of(context).appColors.opacity.base,
@@ -545,27 +524,19 @@ class _TimelineMilestone extends StatelessWidget {
         Row(
           children: <Widget>[
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: categoryColor,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: BaseText.noChangeSubtle(
                 year,
-                style: TypoSecondary.b3r.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TypoSecondary.b3r.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(width: 12),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 color: categoryColor.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
@@ -575,6 +546,53 @@ class _TimelineMilestone extends StatelessWidget {
                 style: TypoSecondary.b4r.copyWith(
                   color: categoryColor,
                   fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            Spacer(),
+            SizedBox(
+              height: 40,
+              width: 60,
+              child: Stack(
+                children: <Widget>[
+                  Positioned(
+                    right: 0, // primera imagen (al frente)
+                    child: _imagenCircular(
+                      'https://picsum.photos/200?1',
+                      context,
+                    ),
+                  ),
+                  Positioned(
+                    right: 10, // segunda imagen
+                    child: _imagenCircular(
+                      'https://picsum.photos/200?2',
+                      context,
+                    ),
+                  ),
+                  Positioned(
+                    right: 20, // tercera imagen
+                    child: _imagenCircular(
+                      'https://picsum.photos/200?3',
+                      context,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 10),
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                side: BorderSide(color: categoryColor),
+                backgroundColor: categoryColor.withValues(alpha: 0.1),
+              ),
+              onPressed: () {
+                print('Ver imágenes');
+              },
+              child: Text(
+                'Galeria',
+                style: TypoButton.b2.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: categoryColor,
                 ),
               ),
             ),
@@ -594,6 +612,16 @@ class _TimelineMilestone extends StatelessWidget {
           ),
         ),
       ],
+    ),
+  );
+
+  Widget _imagenCircular(String url, BuildContext context) => Container(
+    width: 40,
+    height: 40,
+    decoration: BoxDecoration(
+      shape: BoxShape.circle,
+      border: Border.all(color: Theme.of(context).appColors.neutral.soft),
+      image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
     ),
   );
 }

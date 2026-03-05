@@ -366,11 +366,27 @@ class _NewsScreenState extends ConsumerState<NewsScreen> {
                       decoration: InputDecoration(
                         hintText: 'Tu correo electronico',
                         filled: true,
-                        fillColor:
-                            Theme.of(context).appColors.neutral.subtle,
+                        fillColor: Theme.of(context).colorScheme.surface,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide.none,
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.outline,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: Theme.of(
+                              context,
+                            ).appColors.primary.strong,
+                            width: 2,
+                          ),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: 20,
